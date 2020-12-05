@@ -1,0 +1,10 @@
+{
+    "address":"1HZwkjkeaoZfTSaJxDw6aKkxp45agDiEzN",
+    "signature":"HFNXKjB0BLQjGrbY2pd617xumBk1FIs+KxuX79AKo4jat9IeaBxXZ20E5uw6xh565tw7AB6umHUcmd01eqGv5vM=",
+    "message":"1HZwkjkeaoZfTSaJxDw6aKkxp45agDiEzN:1607189625:starRegistry",
+    "star":{
+            "dec":"16 52' 56.6",
+            "ra":"16h 52m 1s",
+            "story":"Testing story 1"
+           }
+}
