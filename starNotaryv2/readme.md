@@ -1,7 +1,3 @@
-# blockchain_udacity
-Blockchain Developer
-
-# Project 2
 1) ERC-721 Token Name: "StarNotary";
 2) ERC-721 Token Symbol: "STN";
 3) Version of the Truffle: "5.1.57"; 
