@@ -4,10 +4,10 @@ This repository containts an Ethereum DApp to Coffee Supply Chain.
 
 ## Project write-up - UML
 
-* ![Activity Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/Activity-Diagram.pdf)
-* ![Class Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/Class-Diagram.pdf)
-* ![Sequence Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/Sequence-Diagram.pdf)
-* ![State Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/State-Diagram.pdf)
+* [Activity Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/Activity-Diagram.pdf)
+* [Class Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/Class-Diagram.pdf)
+* [Sequence Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/Sequence-Diagram.pdf)
+* [State Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/State-Diagram.pdf)
 
 ### Project write-up - Libraries
 
@@ -23,11 +23,11 @@ Give examples (to be clarified)
 
 ## Write smart contracts with functions
 
-* ![SupplyChain.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeebase/SupplyChain.sol)
-* ![Ownable.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeecore/Ownable.sol)
-* ![ConsumerRole.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/ConsumerRole.sol)
-* ![RetailerRole.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/RetailerRole.sol)
-* ![DistributorRole.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/DistributorRole.sol)
+* [SupplyChain.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeebase/SupplyChain.sol)
+* [Ownable.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeecore/Ownable.sol)
+* [ConsumerRole.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/ConsumerRole.sol)
+* [RetailerRole.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/RetailerRole.sol)
+* [DistributorRole.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/DistributorRole.sol)
 
 ## Test smart contract code coverage
 
