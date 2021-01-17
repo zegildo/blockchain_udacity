@@ -17,8 +17,14 @@ This repository containts an Ethereum DApp to Coffee Supply Chain.
 * [Role](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/Roles.sol): Role library was used to allow the access control in the functions developed in the supply chain design. 
 
 ### Project write-up - IPFS
+We are not use yet in this version.
 
 ### General Write Up
+Please, pay attention to truffle.js line 52 where we are using the second wallet of the account.
+```
+      provider: () => new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/v3/${infuraKey}`, 1),
+
+```
 
 ## Write smart contracts with functions
 
