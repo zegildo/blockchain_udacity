@@ -11,11 +11,10 @@ This repository containts an Ethereum DApp to Coffee Supply Chain.
 
 ### Project write-up - Libraries
 
-
-
-```
-Give examples (to be clarified)
-```
+* [Truffle](https://www.trufflesuite.com/): Truffle was used on this project to create web structure, test and deploy it on local network and Rinkeby testnet. 
+* [Infura](https://infura.io/): Infura was used on this project to connect our Dapp with Rinkeby network avoiding us of install all public ledger in our machines.
+* [Metamask](https://metamask.io/):Metamask was used to connect truffle backend migrated with our interface in html/js.
+* [Role](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/Roles.sol): Role library was used to allow the access control in the functions developed in the supply chain design. 
 
 ### Project write-up - IPFS
 
@@ -30,6 +29,7 @@ Give examples (to be clarified)
 * [DistributorRole.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/DistributorRole.sol)
 
 ## Test smart contract code coverage
+Testes can be found in [TestSupplychain.js](https://github.com/zegildo/blockchain_udacity/tree/main/project_3/project/project-6/test)
 
 ## Deploy smart contract on a public test network (Rinkeby)
 
@@ -40,69 +40,11 @@ Contract: https://rinkeby.etherscan.io/address/0x9d3cc5bcd31ce67089f53db88c46505
 ## Modify client code to interact with a smart contract
 
 
-Launch Ganache:
-
-```
-ganache-cli -m "spirit supply whale amount human item harsh scare congress discover talent hamster"
-```
-
-Your terminal should look something like this:
-
-![truffle test](images/ganache-cli.png)
-
-In a separate terminal window, Compile smart contracts:
-
-```
-truffle compile
-```
-
-Your terminal should look something like this:
-
-![truffle test](images/truffle_compile.png)
-
-This will create the smart contract artifacts in folder ```build\contracts```.
-
-Migrate smart contracts to the locally running blockchain, ganache-cli:
-
-```
-truffle migrate
-```
-
-Your terminal should look something like this:
-
-![truffle test](images/truffle_migrate.png)
-
-Test smart contracts:
-
-```
-truffle test
-```
-
-All 10 tests should pass.
-
-![truffle test](images/truffle_test.png)
-
-In a separate terminal window, launch the DApp:
-
-```
-npm run dev
-```
-
-## Built With
-
-* [Ethereum](https://www.ethereum.org/) - Ethereum is a decentralized platform that runs smart contracts
-* [IPFS](https://ipfs.io/) - IPFS is the Distributed Web | A peer-to-peer hypermedia protocol
-to make the web faster, safer, and more open.
-* [Truffle Framework](http://truffleframework.com/) - Truffle is the most popular development framework for Ethereum with a mission to make your life a whole lot easier.
-
 
 ## Authors
 
-See also the list of [contributors](https://github.com/your/project/contributors.md) who participated in this project.
+zegildo@gmail.com
 
 ## Acknowledgments
 
-* Solidity
-* Ganache-cli
-* Truffle
-* IPFS
+Alvaro Andres P., my mentor in Udacity.
