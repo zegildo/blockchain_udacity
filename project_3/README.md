@@ -1,46 +1,42 @@
-# Supply chain & data auditing
+# Architect a Blockchain Supply Chain Solution - Part B
 
-This repository containts an Ethereum DApp that demonstrates a Supply Chain flow between a Seller and Buyer. The user story is similar to any commonly used supply chain process. A Seller can add items to the inventory system stored in the blockchain. A Buyer can purchase such items from the inventory system. Additionally a Seller can mark an item as Shipped, and similarly a Buyer can mark an item as Received.
+This repository containts an Ethereum DApp to Coffee Supply Chain.
 
-The DApp User Interface when running should look like...
+## Project write-up - UML
 
-![truffle test](images/ftc_product_overview.png)
+![Activity Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/Activity-Diagram.pdf)
+![Class Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/Class-Diagram.pdf)
+![Sequence Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/Sequence-Diagram.pdf)
+![State Diagram](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/UML/State-Diagram.pdf)
 
-![truffle test](images/ftc_farm_details.png)
-
-![truffle test](images/ftc_product_details.png)
-
-![truffle test](images/ftc_transaction_history.png)
+### Project write-up - Libraries
 
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-Please make sure you've already installed ganache-cli, Truffle and enabled MetaMask extension in your browser.
 
 ```
 Give examples (to be clarified)
 ```
 
-### Installing
+### Project write-up - IPFS
 
-A step by step series of examples that tell you have to get a development env running
+### General Write Up
 
-Clone this repository:
+## Write smart contracts with functions
 
-```
-git clone https://github.com/udacity/nd1309/tree/master/course-5/project-6
-```
+![SupplyChain.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeebase/SupplyChain.sol)
+![Ownable.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeecore/Ownable.sol)
+![ConsumerRole.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/ConsumerRole.sol)
+![RetailerRole.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/RetailerRole.sol)
+![DistributorRole.sol](https://github.com/zegildo/blockchain_udacity/blob/main/project_3/project/project-6/contracts/coffeeaccesscontrol/DistributorRole.sol)
 
-Change directory to ```project-6``` folder and install all requisite npm packages (as listed in ```package.json```):
+## Test smart contract code coverage
 
-```
-cd project-6
-npm install
-```
+## Deploy smart contract on a public test network (Rinkeby)
+Transation ID: https://rinkeby.etherscan.io/tx/0x0174df580e5dfd8165a9053b4ea27d5cc4223397f2db50db08e1079c232bb452
+Contract: https://rinkeby.etherscan.io/address/0x9d3cc5bcd31ce67089f53db88c46505526852f3b
+
+## Modify client code to interact with a smart contract
+
 
 Launch Ganache:
 
