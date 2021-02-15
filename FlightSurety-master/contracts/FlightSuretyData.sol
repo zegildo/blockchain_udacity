@@ -138,7 +138,7 @@ contract FlightSuretyData {
     requireIsOperational
     //requireAirlineNotRegistred(airline_address)
     {
-        if(getNumAirlinesRegistred() > AMOUNT_AIRLINES_COMPANY){
+        if(getNumAirlinesRegistred() >= AMOUNT_AIRLINES_COMPANY){
             createAirline(airline_address, airline_name, false, false, true);
         } else {
             createAirline(airline_address, airline_name, true, false, true);
@@ -171,39 +171,68 @@ contract FlightSuretyData {
     }
 
     /**
+     * @dev Get the arline information by address
+     */
+    function getAirline(address address_airline)external view returns(address, string, bool, bool, bool, address[])
+    {
+
+        Airline memory airline = airlines[address_airline];
+        return (airline.addr, 
+                airline.name, 
+                airline.isRegistered, 
+                airline.isFunded, 
+                airline.exists,
+                airline.multiCalls);
+    }
+
+    /**
      * @dev Ckeck if the majority accept the 
      *      new Airline on the group
      */
     function vote(address airline_address) 
-    public 
+    external 
     requireIsOperational 
     {
-       bool voted = false;
-       uint length = airlines[airline_address].multiCalls.length; 
+        
+        require(!airlines[airline_address].isRegistered, "Airline is already Registered");
+        require(airlines[msg.sender].isRegistered, "Unregistered voting company");
+        require(airlines[msg.sender].isFunded, "Airline does not participate in contract until it submits funding of 10 ether");
+        
+        bool voted = checkDoubleVote(airline_address);
+        require(!voted, "The Airline already voted!");
+        
+        Airline storage airline = airlines[airline_address];
+        airline.multiCalls.push(msg.sender);
+        if(airline.multiCalls.length >= (getNumAirlinesRegistred().div(2))){
+            airline.isRegistered = true;
+        }
+    }
+
+    /**
+        @dev Check Double Vote
+     */
+    function checkDoubleVote(address airline_address) private view returns(bool){
+        bool voted = false;
+        uint length = airlines[airline_address].multiCalls.length; 
         for (uint i = 0; i < length; i++) {
             if (airlines[airline_address].multiCalls[i] == msg.sender) {
                 voted = true;
                 break;
             }
         }
-        require(!voted, "The Airline already voted!");
-        require(!airlines[airline_address].isRegistered, "Airline is already Registered");
-        
-        Airline storage airline = airlines[airline_address];
-        airline.multiCalls.push(msg.sender);
-        if(airline.multiCalls.length >= (getNumAirlinesRegistred().div(2))) {
-            airline.isRegistered = true;
-        }
+        return voted;
+
     }
 
     /**
-    * @dev Fund airline to participate of the contract
+    * @dev Initial funding for the insurance. Unless there are too many delayed flights
+    *      resulting in insurance payouts, the contract should be self-sustaining
     *
-    */ 
-    function fund(address airline_address) external payable{
-        require(airlines[airline_address].isRegistered, "The Airline is not registered");
+    */    
+    function fund() external payable{
+        require(airlines[msg.sender].isRegistered, "The Airline is not registered");
         require(msg.value == AIRLINE_FUNDING_VALUE, "The initial airline fee is equal to 10 ether");
-        airlines[airline_address].isFunded = true;
+        airlines[msg.sender].isFunded = true;
     }
 
     /**
@@ -296,19 +325,6 @@ contract FlightSuretyData {
         msg.sender.transfer(value);
     }
 
-   /**
-    * @dev Initial funding for the insurance. Unless there are too many delayed flights
-    *      resulting in insurance payouts, the contract should be self-sustaining
-    *
-    */   
-    function fund
-                            (   
-                            )
-                            public
-                            payable
-    {
-    }
-
     function getFlightKey
                         (
                             address airline,
@@ -320,17 +336,6 @@ contract FlightSuretyData {
                         returns(bytes32) 
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
-    }
-
-    /**
-    * @dev Fallback function for funding smart contract.
-    *
-    */
-    function() 
-                            external 
-                            payable 
-    {
-        fund();
     }
 
     /**

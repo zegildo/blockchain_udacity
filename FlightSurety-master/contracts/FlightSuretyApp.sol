@@ -82,6 +82,24 @@ contract FlightSuretyApp {
         return flightSuretyData.isOperational();  // Modify to call data contract's status
     }
 
+    function  getNumAirlinesRegistred() public view returns(uint)
+    {
+        return flightSuretyData.getNumAirlinesRegistred();
+    }
+
+    function getAirline(address address_airline)external view returns(address, string, bool, bool, bool, address[])
+    {
+        return flightSuretyData.getAirline(address_airline);
+    }
+
+    function vote(address airline_address) external {
+        return flightSuretyData.vote(airline_address);
+    }
+
+    function fund() external payable{
+        return flightSuretyData.fund();
+    }
+
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
@@ -336,8 +354,9 @@ contract FlightSuretyData {
     function updateFlightStatus(bytes32 flight_hash, uint8 status_code) external;
     function pay(bytes32 flight_hash, uint8 value) external;
     function creditInsurees(bytes32 flight_hash) external;
-    function vote(address airline_address) public;
-    function fund(address airline_address) external payable;
+    function vote(address airline_address) external;
+    function fund() external payable;
     function buy(address airline_address, string fligh_code, uint timestamp) external payable; 
     function getNumAirlinesRegistred() public view returns(uint);
+    function getAirline(address address_airline)external view returns(address, string, bool, bool, bool, address[]);
 }
