@@ -130,6 +130,15 @@ contract FlightSuretyApp {
         return flightSuretyData.getInsuredClient(flight_hash);
     }
 
+    function getInsuredDue(bytes32 flight_hash) public view returns(uint){
+        return flightSuretyData.getInsuredDue(flight_hash);
+    }
+
+    function pay(bytes32 flight_hash, uint8 value) external
+    {
+        return flightSuretyData.pay(flight_hash, value);
+    }
+
 
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
@@ -391,4 +400,5 @@ contract FlightSuretyData {
     function getAirline(address address_airline)external view returns(address, string, bool, bool, address[]);
     function getFlight(bytes32 flight_address) external view returns(string, string, string, uint, bool, bool, uint8, address, address[]);
     function getInsuredClient(bytes32 flight_hash) public view returns(uint);
+    function getInsuredDue(bytes32 flight_hash) public view returns(uint);
 }

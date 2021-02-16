@@ -405,11 +405,19 @@ contract FlightSuretyData {
     }
 
     /**
-    * @dev Get the value of paid insure.
+    * @dev Get the value paid of insure.
     *
     */
     function getInsuredClient(bytes32 flight_hash) public view returns(uint){
         return insured_clients[flight_hash][msg.sender];
+    }
+
+    /**
+    * @dev Get the value calculated after airline fail.
+    *
+    */
+    function getInsuredDue(bytes32 flight_hash) public view returns(uint){
+        return insured_due[flight_hash][msg.sender];
     }
 
 

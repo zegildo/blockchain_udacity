@@ -284,16 +284,42 @@ it("(Buy an insure) ", async() => {
 });
 
 it("(Credit Insuree) ", async() => {
-
+    let instanceApp = await FlightSuretyApp.deployed();
+   
+    let user_client = accounts[6];
     
+    let airline = config.owner;
+    let flight_code = "AAL001";
+    let date = "2020-06-09T12:00:00Z"
+    let timestamp = new Date(date).getTime();
+    let statusCode = 20;
     
+    await instanceApp.processFlightStatus(airline, flight_code, timestamp, statusCode, {from:user_client});
+    let flight_hash = await instanceApp.getFlightKey(airline_address, fligh_code, timestamp);
+    let insure_value = await instanceApp.getInsuredClient(flight_hash, {from:user_client});
+    let insure_due = await instanceApp.getInsuredDue(flight_hash, {from:user_client});
+    assert.equal(insure_due, insure_value * 1.5);
 });
 
 
 it("(Pay Insuree) ", async() => {
 
-    
-    
+    let instanceApp = await FlightSuretyApp.deployed();
+
+    let user_client = accounts[6];
+    let value = await web3.utils.toWei("0.2", "ether");
+
+    let user_balance_before = await web3.eth.getBalance(user_client);
+    let insure_due_before = await instanceApp.getInsuredDue(flight_hash, {from:user_client});
+
+    await instanceApp.pay(flight_hash, value, {from:user_client});
+
+    let insure_due_after = await instanceApp.getInsuredDue(flight_hash, {from:user_client});
+    let user_balance_after = await web3.eth.getBalance(user_client);
+
+    assert.equal(insure_due_after + value, insure_due_before);
+    assert.equal(user_balance_before + value, user_balance_after);
+
 });
 
  
