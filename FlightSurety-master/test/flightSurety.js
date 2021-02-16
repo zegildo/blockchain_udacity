@@ -76,7 +76,7 @@ contract('Flight Surety Tests', async (accounts) => {
     let num_airlines = await instanceApp.getNumAirlinesRegistred.call();
     
     assert.equal(num_airlines, 1);
-    
+   
     let airline_details = await instanceApp.getAirline(config.owner);
     
     assert.equal(airline_details[1], "Latam Airlines");
@@ -151,7 +151,9 @@ it("(multiparty/airline register) register by multiparty consensus voting", asyn
     let airline_5_details = await instanceApp.getAirline.call(airline_5);
     assert.equal(airline_5_details[2], false);
 
-    //2th airline is already registered
+    
+
+    //2sd airline is already registered
     let airline_2_details = await instanceApp.getAirline.call(airline_2);
     assert.equal(airline_2_details[2], true);
 
@@ -159,26 +161,140 @@ it("(multiparty/airline register) register by multiparty consensus voting", asyn
     try{
         await instanceApp.vote(airline_2, {from: config.owner})
     }catch(err){
-        assert.equal(err.reason,"Airline is already Registered");
+        assert.equal(err.reason,"Airline is already registered");
     }
-    let owner = await instanceApp.getAirline.call(config.owner);
-    console.log("owner:", owner);
-    console.log("airline_5_details:", airline_5_details);
 
-    //airline_2 is already registered
+    //1st airline is already registered
+    let owner_details = await instanceApp.getAirline.call(config.owner);
+    assert.equal(owner_details[2], true);
+
     try{
         await instanceApp.vote(airline_5, {from: config.owner});
     }catch(err){
         assert.equal(err.reason,"Airline does not participate in contract until it submits funding of 10 ether");
     }
 
-    await instanceApp.fund({from:airline_2, value:5});
+
+
+
+    //await instanceApp.fund({from:airline_2, value:5});
+    //TODO CONTINUIN CHECK VOTING
+    //IF THE SAME COMPANY CAN VOTE AGAIN
+    //IF MORE THE 50% REGISTER THE COMPANY
 
 });
 
+it("(Flight) create a flight", async() => {
+    
+    //https://www.kwe.co.jp/en/useful-contents/code1
+
+    let instanceApp = await config.flightSuretyApp;
+
+    let flight_code = "AAL001";
+    let origin = "Rio";
+    let destination = "London";
+    let date = "2020-06-09T12:00:00Z"
+    let timestamp = new Date(date).getTime();
+
+    await instanceApp.registerFlight(flight_code,origin,destination,timestamp,{from:config.owner});
+    
+    let flight_hash = await instanceApp.getFlightKey.call(config.owner, flight_code, timestamp);
+    let flight_info = await instanceApp.getFlight.call(flight_hash);
+
+    assert.equal(flight_info[0],flight_code);
+    assert.equal(flight_info[1],origin);
+    assert.equal(flight_info[2],destination);
+    assert.equal(flight_info[3],timestamp);
+    assert.equal(flight_info[4],true);
+    assert.equal(flight_info[5],false);
+    assert.equal(flight_info[6],0);
+    assert.equal(flight_info[7],config.owner);    
+});
+
+it("(Flight) Update Status", async() => {
+    
+    let instanceApp = await config.flightSuretyApp;
+
+    let flight_code = "AAL001";
+    let date = "2020-06-09T12:00:00Z"
+    let timestamp = new Date(date).getTime();
+
+    let flight_hash = await instanceApp.getFlightKey(config.owner, flight_code, timestamp);
+
+    let STATUS_CODE_LATE_TECHNICAL = 40;
+    await instanceApp.updateFlightStatus(flight_hash, STATUS_CODE_LATE_TECHNICAL);
+    
+    let flight_info = await instanceApp.getFlight.call(flight_hash);
+    assert.equal(flight_info[6], STATUS_CODE_LATE_TECHNICAL);
+});
 
 
+it("(Buy an insure) ", async() => {
 
+    let instanceApp = await config.flightSuretyApp;
+
+    let flight_code = "AAL001";
+    let date = "2020-06-09T12:00:00Z"
+    let timestamp = new Date(date).getTime();
+
+    let user_client = accounts[6];
+    let zero_insure = await web3.utils.toWei("0", "ether");
+    let one_ether_insure = await web3.utils.toWei("1", "ether");
+    let ten_ether_fund = await web3.utils.toWei("10", "ether");
+
+    //check if airline no fundind trying to paid
+    try{
+        await instanceApp.buy(config.owner, flight_code, timestamp, {from: user_client, value: zero_insure});
+    }catch(err){
+        assert.equal(err.reason,"Airline can not participate in contract until it submits funding of 10 ether");
+    }
+
+    let owner_details = await instanceApp.getAirline.call(config.owner);
+    assert.equal(owner_details[2], true);
+    assert.equal(owner_details[3], false);
+
+    try{
+        await instanceApp.fundFee({from:config.owner, value:ten_ether_fund});
+    }catch(err){
+        console.log(err);
+    }
+
+    owner_details = await instanceApp.getAirline.call(config.owner);
+    console.log(owner_details);
+    assert.equal(owner_details[3], true);
+
+
+    //check if user has paid appropriate value
+    try{
+        await instanceApp.buy(config.owner, flight_code, timestamp, {from: user_client, value: zero_insure});
+    }catch(err){
+        assert.equal(err.reason,"It is not possible to accept this value of insure");
+    }
+    
+    //verificar se o status do voo foi atualizado
+    await instanceApp.buy(airline_address, fligh_code, timestamp, {from: user_client, value: one_ether_insure});
+    let flight_hash = await instanceApp.getFlightKey(airline_address, fligh_code, timestamp);
+    let flight_info = await instanceApp.getFlight.call(flight_hash);
+    assert.equal(flight_info[5],true);
+
+    //verificar se o valor enviado bate com o valor armazenado pela estrutura
+    let insure_value = await instanceApp.getInsuredClient(flight_hash, {from:user_client});
+    assert.equal(one_ether_insure, insure_value);
+
+});
+
+it("(Credit Insuree) ", async() => {
+
+    
+    
+});
+
+
+it("(Pay Insuree) ", async() => {
+
+    
+    
+});
 
  
 

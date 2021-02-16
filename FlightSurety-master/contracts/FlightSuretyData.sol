@@ -21,7 +21,6 @@ contract FlightSuretyData {
         string name;
         bool isRegistered;
         bool isFunded;
-        bool exists;
         address[] multiCalls;
     }
     Airline[] private airlines_list;
@@ -89,8 +88,43 @@ contract FlightSuretyData {
         _;
     }
 
+    /**
+    * @dev Modifier that requires address of not registered airline yet.
+    */
     modifier requireAirlineNotRegistred(address addr) {
-        require(airlines[addr].exists, "Airline is already registered");
+        require(!airlines[addr].isRegistered, "Airline is already registered");
+        _;
+    }
+
+    /**
+    * @dev Modifier that requires address a registered airline.
+    */
+    modifier requireRegistration(address addr){
+        require(airlines[addr].isRegistered, "Unregistered Airline trying to change status");
+        _;
+    }
+
+    /**
+    * @dev Modifier that requires airline that paid the funds
+    */
+    modifier requireFund(address addr){
+        require(airlines[addr].isFunded, "Airline can not participate in contract until it submits funding of 10 ether");
+        _;
+    }
+
+    /**
+    * @dev Modifier that requires registered flight
+    */
+    modifier requireFlightRegister(bytes32 flight_hash){
+        require(flights[flight_hash].isRegistered, "Flight is not registered");
+        _;
+    }
+
+    /**
+    * @dev Modifier that requires insured flight
+    */
+    modifier requireFlightIsInsured(bytes32 flight_hash){
+        require(flights[flight_hash].isInsured, "Flight dont have insuree");
         _;
     }
 
@@ -107,7 +141,6 @@ contract FlightSuretyData {
     {
         return operational;
     }
-
 
     /**
     * @dev Sets contract operations on/off
@@ -136,12 +169,12 @@ contract FlightSuretyData {
                             )
     external 
     requireIsOperational
-    //requireAirlineNotRegistred(airline_address)
+    requireAirlineNotRegistred(airline_address)
     {
         if(getNumAirlinesRegistred() >= AMOUNT_AIRLINES_COMPANY){
-            createAirline(airline_address, airline_name, false, false, true);
+            createAirline(airline_address, airline_name, false, false);
         } else {
-            createAirline(airline_address, airline_name, true, false, true);
+            createAirline(airline_address, airline_name, true, false);
         }
     }
 
@@ -153,9 +186,8 @@ contract FlightSuretyData {
                             address airline_address, 
                             string airline_name,
                             bool isRegistered,
-                            bool isFunded, 
-                            bool exists
-                          ) 
+                            bool isFunded                          
+                            ) 
     private 
     {
         Airline memory new_airline = Airline({
@@ -163,7 +195,6 @@ contract FlightSuretyData {
             name: airline_name,
             isRegistered: isRegistered,
             isFunded: isFunded,
-            exists:exists,
             multiCalls: new address[](0)
         });
         airlines_list.push(new_airline);
@@ -173,7 +204,10 @@ contract FlightSuretyData {
     /**
      * @dev Get the arline information by address
      */
-    function getAirline(address address_airline)external view returns(address, string, bool, bool, bool, address[])
+    function getAirline(address address_airline)
+    external 
+    view 
+    returns(address, string, bool, bool, address[])
     {
 
         Airline memory airline = airlines[address_airline];
@@ -181,7 +215,6 @@ contract FlightSuretyData {
                 airline.name, 
                 airline.isRegistered, 
                 airline.isFunded, 
-                airline.exists,
                 airline.multiCalls);
     }
 
@@ -191,12 +224,11 @@ contract FlightSuretyData {
      */
     function vote(address airline_address) 
     external 
-    requireIsOperational 
-    {
-        
-        require(!airlines[airline_address].isRegistered, "Airline is already Registered");
-        require(airlines[msg.sender].isRegistered, "Unregistered voting company");
-        require(airlines[msg.sender].isFunded, "Airline does not participate in contract until it submits funding of 10 ether");
+    requireIsOperational
+    requireAirlineNotRegistred(airline_address)
+    requireRegistration(msg.sender)
+    requireFund(msg.sender)
+    {          
         
         bool voted = checkDoubleVote(airline_address);
         require(!voted, "The Airline already voted!");
@@ -229,8 +261,10 @@ contract FlightSuretyData {
     *      resulting in insurance payouts, the contract should be self-sustaining
     *
     */    
-    function fund() external payable{
-        require(airlines[msg.sender].isRegistered, "The Airline is not registered");
+    function fundFee() external payable
+    requireIsOperational 
+    requireRegistration(msg.sender)
+    {
         require(msg.value == AIRLINE_FUNDING_VALUE, "The initial airline fee is equal to 10 ether");
         airlines[msg.sender].isFunded = true;
     }
@@ -245,10 +279,13 @@ contract FlightSuretyData {
                             uint timestamp
                             )
     external
+    requireIsOperational
+    requireRegistration(msg.sender)
+    requireFund(msg.sender)
     {
         bytes32 flight_hash = getFlightKey(msg.sender, flight_code, timestamp);
         require(!flights[flight_hash].isRegistered, "The flight is already registered");
-
+        
         Flight memory new_flight = Flight({
             flight_code:flight_code,
             origin:origin,
@@ -262,6 +299,25 @@ contract FlightSuretyData {
          });
         
         flights[flight_hash] = new_flight;
+    }
+
+    function getFlight(bytes32 flight_hash) 
+    external
+    view
+    returns(string, string, string, uint, bool, bool, uint8, address, address[])
+    {
+        Flight storage flight = flights[flight_hash];
+        return(
+            flight.flight_code,
+            flight.origin,
+            flight.destination,
+            flight.timestamp,
+            flight.isRegistered,
+            flight.isInsured,
+            flight.status,
+            flight.airline,
+            flight.insured_clients
+            );
     }    
 
     /**
@@ -285,12 +341,12 @@ contract FlightSuretyData {
                 string fligh_code,
                 uint timestamp                             
                 )
-                external
-                payable
+    external
+    payable
+    requireIsOperational
+    requireFund(airline_address)
     {
-        require(airlines[airline_address].isFunded, "Airline does not participate in contract until it submits funding of 10 ether");
         require((msg.value > 0 ether && msg.value <= 1 ether), "It is not possible to accept this value of insure");
-        
         bytes32 flight_hash = getFlightKey(airline_address, fligh_code, timestamp);
         require(insured_clients[flight_hash][msg.sender] == 0, "User already bought insurance for this flight");
         
@@ -302,11 +358,12 @@ contract FlightSuretyData {
     /**
      *  @dev Credits payouts to insurees
     */
-    function creditInsurees(bytes32 flight_hash) external
+    function creditInsurees(bytes32 flight_hash) 
+    external
+    requireIsOperational
+    requireFlightRegister(flight_hash)
+    requireFlightIsInsured(flight_hash)
     {
-        require(flights[flight_hash].isRegistered, "Flight is not registered");
-        require(flights[flight_hash].isInsured, "Flight dont have insuree");
-
         uint insure_payed_by_passanger = insured_clients[flight_hash][msg.sender];
         insured_due[flight_hash][msg.sender] = (insure_payed_by_passanger.mul(15)).div(10); 
     }
@@ -315,12 +372,13 @@ contract FlightSuretyData {
      *  @dev Transfers eligible payout funds to insuree
      *
     */
-    function pay(bytes32 flight_hash, uint8 value) external requireIsOperational
+    function pay(bytes32 flight_hash, uint8 value) 
+    external 
+    requireIsOperational
+    requireFlightRegister(flight_hash)
+    requireFlightIsInsured(flight_hash)
     {
-        require(flights[flight_hash].isRegistered, "Flight is not registered");
-        require(flights[flight_hash].isInsured, "Flight dont have insuree");
-        require(insured_due[flight_hash][msg.sender] >= value, "Insuree does not have this amount of credit");
-        
+        require(insured_due[flight_hash][msg.sender] >= value, "Insuree does not have this amount of credit");   
         insured_due[flight_hash][msg.sender] = insured_due[flight_hash][msg.sender].sub(value);
         msg.sender.transfer(value);
     }
@@ -346,6 +404,13 @@ contract FlightSuretyData {
         return airlines_list.length;
     }
 
+    /**
+    * @dev Get the value of paid insure.
+    *
+    */
+    function getInsuredClient(bytes32 flight_hash) public view returns(uint){
+        return insured_clients[flight_hash][msg.sender];
+    }
 
 
 }

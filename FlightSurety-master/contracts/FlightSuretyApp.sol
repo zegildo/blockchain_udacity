@@ -87,18 +87,49 @@ contract FlightSuretyApp {
         return flightSuretyData.getNumAirlinesRegistred();
     }
 
-    function getAirline(address address_airline)external view returns(address, string, bool, bool, bool, address[])
+    function getAirline(address address_airline)
+    external 
+    view 
+    returns(address, string, bool, bool, address[])
     {
         return flightSuretyData.getAirline(address_airline);
     }
 
-    function vote(address airline_address) external {
+    function vote(address airline_address) external 
+    {
         return flightSuretyData.vote(airline_address);
     }
 
-    function fund() external payable{
-        return flightSuretyData.fund();
+    function fundFee() external payable
+    {
+        return flightSuretyData.fundFee();
     }
+
+    function getFlight(bytes32 flight_address) 
+    external
+    view
+    returns(string, string, string, uint, bool, bool, uint8, address, address[]){
+        return flightSuretyData.getFlight(flight_address);
+    }
+
+
+    function updateFlightStatus(bytes32 flight_hash, uint8 status_code)
+    external
+    {
+        return flightSuretyData.updateFlightStatus(flight_hash, status_code);
+    }
+    
+    function buy(address airline_address, string fligh_code, uint timestamp) 
+    external 
+    payable
+    {
+        return flightSuretyData.buy(airline_address, fligh_code, timestamp);
+    }
+
+    function getInsuredClient(bytes32 flight_hash) public view returns(uint){
+        return flightSuretyData.getInsuredClient(flight_hash);
+    }
+
 
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
@@ -350,13 +381,14 @@ contract FlightSuretyData {
     function isOperational() public view returns(bool); 
     function registerAirline(address airline_address, string airline_name) external;
     function registerFlight(string flight_code, string origin, string destination, uint timestamp) external;
-    function getFlightKey(address airline, string flightCode, uint256 timestamp) pure public returns(bytes32);
     function updateFlightStatus(bytes32 flight_hash, uint8 status_code) external;
     function pay(bytes32 flight_hash, uint8 value) external;
     function creditInsurees(bytes32 flight_hash) external;
     function vote(address airline_address) external;
-    function fund() external payable;
+    function fundFee() external payable;
     function buy(address airline_address, string fligh_code, uint timestamp) external payable; 
     function getNumAirlinesRegistred() public view returns(uint);
-    function getAirline(address address_airline)external view returns(address, string, bool, bool, bool, address[]);
+    function getAirline(address address_airline)external view returns(address, string, bool, bool, address[]);
+    function getFlight(bytes32 flight_address) external view returns(string, string, string, uint, bool, bool, uint8, address, address[]);
+    function getInsuredClient(bytes32 flight_hash) public view returns(uint);
 }
