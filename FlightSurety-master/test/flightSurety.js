@@ -156,6 +156,8 @@ it("(voting) register by multiparty consensus voting", async() => {
     
     let instanceApp = await config.flightSuretyApp;
     let num_airlines = await instanceApp.getNumAirlinesRegistred.call();
+
+    assert.equal(num_airlines, 5);
     
     let airline_2 = accounts[1];
     let airline_3 = accounts[2];
@@ -184,11 +186,14 @@ it("(voting) register by multiparty consensus voting", async() => {
     try{
         await instanceApp.vote(airline_5, {from:config.owner});
     }catch(err){
-        assert.equal(err.reason,"Airline does not participate in contract until it submits funding of 10 ether");
+        assert.equal(err.reason,"Airline can not participate in contract until it submits funding of 10 ether");
     }
     //now can vote because has paid the fund
     let ten_ether_fund = await web3.utils.toWei("10", "ether");
-    await instanceApp.fund({from:config.owner, value:ten_ether_fund});
+    //config.owner.transfer(instanceApp);
+    await instanceApp.fundFee({from:config.owner, value:ten_ether_fund});
+
+    
     
     await instanceApp.vote(airline_5, {from:config.owner});
     airline_5_details = await instanceApp.getAirline.call(airline_5);
@@ -197,10 +202,17 @@ it("(voting) register by multiparty consensus voting", async() => {
 
     try{
         await instanceApp.vote(airline_5, {from:config.owner});
-    }catch(e){
+    }catch(err){
         assert.equal(err.reason,"The Airline already voted!");
     }
     //IF MORE THE 50% REGISTER THE COMPANY
+    try{
+        await instanceApp.vote(airline_5, {from:airline_2});
+    }catch(err){
+        assert.equal(err.reason,"Airline can not participate in contract until it submits funding of 10 ether");
+    }
+    await instanceApp.fundFee({from:airline_2, value:ten_ether_fund});
+    await instanceApp.fundFee({from:airline_3, value:ten_ether_fund});
     await instanceApp.vote(airline_5, {from:airline_2});
     await instanceApp.vote(airline_5, {from:airline_3});
 
@@ -212,8 +224,6 @@ it("(voting) register by multiparty consensus voting", async() => {
     //isRegistered is true
     assert.equal(airline_5_details[2], true);
      
-    
-
 });
 /*
 it("(Flight) create a flight", async() => {

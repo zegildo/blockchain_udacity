@@ -164,17 +164,19 @@ contract FlightSuretyData {
     *
     */   
     function registerAirline(
-                             address airline_address, 
-                             string airline_name 
+                             address new_airline, 
+                             string airline_name
+                             //address main_airline 
                             )
     external 
     requireIsOperational
-    requireAirlineNotRegistred(airline_address)
+    requireAirlineNotRegistred(new_airline)
+    //requireFund(main_airline)
     {
         if(getNumAirlinesRegistred() >= AMOUNT_AIRLINES_COMPANY){
-            createAirline(airline_address, airline_name, false, false);
+            createAirline(new_airline, airline_name, false, false);
         } else {
-            createAirline(airline_address, airline_name, true, false);
+            createAirline(new_airline, airline_name, true, false);
         }
     }
 
@@ -222,19 +224,19 @@ contract FlightSuretyData {
      * @dev Ckeck if the majority accept the 
      *      new Airline on the group
      */
-    function vote(address airline_address) 
+    function vote(address airline_address, address airline_voting) 
     external 
     requireIsOperational
     requireAirlineNotRegistred(airline_address)
-    requireRegistration(msg.sender)
-    requireFund(msg.sender)
+    requireRegistration(airline_voting)
+    requireFund(airline_voting)
     {          
         
-        bool voted = checkDoubleVote(airline_address);
+        bool voted = checkDoubleVote(airline_voting);
         require(!voted, "The Airline already voted!");
         
         Airline storage airline = airlines[airline_address];
-        airline.multiCalls.push(msg.sender);
+        airline.multiCalls.push(airline_voting);
         if(airline.multiCalls.length >= (getNumAirlinesRegistred().div(2))){
             airline.isRegistered = true;
         }
@@ -261,12 +263,13 @@ contract FlightSuretyData {
     *      resulting in insurance payouts, the contract should be self-sustaining
     *
     */    
-    function fundFee() external payable
+    function fundFee(address airline, uint value) external payable
     requireIsOperational 
-    requireRegistration(msg.sender)
+    requireRegistration(airline)
     {
-        require(msg.value == AIRLINE_FUNDING_VALUE, "The initial airline fee is equal to 10 ether");
-        airlines[msg.sender].isFunded = true;
+        require(value == AIRLINE_FUNDING_VALUE, "The initial airline fee is equal to 10 ether");
+        contractOwner.transfer(value);
+        airlines[airline].isFunded = true;
     }
 
     /**
@@ -372,15 +375,16 @@ contract FlightSuretyData {
      *  @dev Transfers eligible payout funds to insuree
      *
     */
-    function pay(bytes32 flight_hash, uint8 value) 
+    function withdraw(address client_address, bytes32 flight_hash) 
     external 
     requireIsOperational
     requireFlightRegister(flight_hash)
     requireFlightIsInsured(flight_hash)
     {
-        require(insured_due[flight_hash][msg.sender] >= value, "Insuree does not have this amount of credit");   
-        insured_due[flight_hash][msg.sender] = insured_due[flight_hash][msg.sender].sub(value);
-        msg.sender.transfer(value);
+        require(insured_due[flight_hash][client_address] > 0, "Insuree does not have credit");   
+        uint value = insured_due[flight_hash][client_address];
+        insured_due[flight_hash][client_address] = 0;
+        client_address.transfer(value);
     }
 
     function getFlightKey
