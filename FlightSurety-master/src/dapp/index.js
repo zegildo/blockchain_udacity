@@ -3,7 +3,6 @@ import DOM from './dom';
 import Contract from './contract';
 import './flightsurety.css';
 
-
 (async() => {
 
     let result = null;
@@ -27,6 +26,7 @@ import './flightsurety.css';
         })
     
     });
+
     
 
 })();
@@ -46,6 +46,8 @@ function display(title, description, results) {
     displayDiv.append(section);
 
 }
+
+
 
 
 
