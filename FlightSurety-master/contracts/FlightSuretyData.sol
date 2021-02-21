@@ -263,13 +263,13 @@ contract FlightSuretyData {
     *      resulting in insurance payouts, the contract should be self-sustaining
     *
     */    
-    function fundFee(address airline, uint value) external payable
+    function fundFee(address addr) external payable
     requireIsOperational 
-    requireRegistration(airline)
+    requireRegistration(addr)
     {
-        require(value == AIRLINE_FUNDING_VALUE, "The initial airline fee is equal to 10 ether");
-        contractOwner.transfer(value);
-        airlines[airline].isFunded = true;
+        require(msg.value == AIRLINE_FUNDING_VALUE, "The initial airline fee is equal to 10 ether");
+        contractOwner.transfer(msg.value);
+        airlines[addr].isFunded = true;
     }
 
     /**
@@ -423,7 +423,5 @@ contract FlightSuretyData {
     function getInsuredDue(bytes32 flight_hash) public view returns(uint){
         return insured_due[flight_hash][msg.sender];
     }
-
-
 }
 

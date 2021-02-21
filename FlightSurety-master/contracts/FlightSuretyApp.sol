@@ -105,7 +105,7 @@ contract FlightSuretyApp {
 
     function fundFee() external payable
     {
-        flightSuretyData.fundFee(msg.sender, msg.value);
+        flightSuretyData.fundFee.value(msg.value)(msg.sender);
     }
 
     function getFlight(bytes32 flight_address) 
@@ -141,7 +141,6 @@ contract FlightSuretyApp {
     {
         return flightSuretyData.withdraw(msg.sender,flight_hash);
     }
-
 
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
@@ -396,7 +395,7 @@ contract FlightSuretyData {
     function withdraw(address client_address, bytes32 flight_hash) external;
     function creditInsurees(bytes32 flight_hash) external;
     function vote(address airline_address, address airline_voting) external;
-    function fundFee(address airline, uint value) external payable;
+    function fundFee(address addr) external payable;
     function buy(address airline_address, string fligh_code, uint timestamp) external payable; 
     function getNumAirlinesRegistred() public view returns(uint);
     function getAirline(address address_airline)external view returns(address, string, bool, bool, address[]);
