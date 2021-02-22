@@ -172,11 +172,11 @@ it("(airline register) 4 registered, 1 add none funded", async() => {
     let airline_4_details = await instanceApp.getAirline(airline_4);
     let airline_5_details = await instanceApp.getAirline(airline_5);
     
-    assert.equal(airline_1_details[3], false);
-    assert.equal(airline_2_details[3], false);
-    assert.equal(airline_3_details[3], false);
-    assert.equal(airline_4_details[3], false);
-    assert.equal(airline_5_details[3], false);
+    assert.equal(airline_1_details[2], true);
+    assert.equal(airline_2_details[2], true);
+    assert.equal(airline_3_details[2], true);
+    assert.equal(airline_4_details[2], true);
+    assert.equal(airline_5_details[2], false);
 
 });
 
@@ -212,36 +212,39 @@ it("(fund) Airline can fund", async() => {
     let airline_1 = config.owner;
     let ten_ether_fund = await web3.utils.toWei("10", "ether");
 
-    let balance_App = await web3.eth.getBalance(config.flightSuretyApp.address);
-    let balance_Data = await web3.eth.getBalance(config.flightSuretyData.address);
-    console.log("balance_App_before:", balance_App);
-    console.log("balance_Data_before:", balance_Data);
+    //let balance_App = await web3.eth.getBalance(config.flightSuretyApp.address);
+    //let balance_Data = await web3.eth.getBalance(config.flightSuretyData.address);
+    //console.log("balance_App_before:", balance_App);
+    //console.log("balance_Data_before:", balance_Data);
     
     let airline_Balance_Before =  await web3.utils.toWei(await web3.eth.getBalance(airline_1), "ether");
-    console.log("airline_1_Balance_Before:", airline_Balance_Before);
+    //console.log("airline_1_Balance_Before:", airline_Balance_Before);
 
     await instanceApp.fundFee({from:airline_1, value:ten_ether_fund});
 
-    balance_App =await web3.utils.toWei( await web3.eth.getBalance(config.flightSuretyApp.address), "ether");
-    balance_Data = await web3.eth.getBalance(config.flightSuretyData.address);
-    console.log("balance_App_after:", balance_App);
-    console.log("balance_Data_after:", balance_Data);
+    //balance_App =await web3.utils.toWei( await web3.eth.getBalance(config.flightSuretyApp.address), "ether");
+    //balance_Data = await web3.eth.getBalance(config.flightSuretyData.address);
+    //console.log("balance_App_after:", balance_App);
+    //console.log("balance_Data_after:", balance_Data);
     
     let airline_Balance_After = await web3.utils.toWei(await web3.eth.getBalance(airline_1), "ether");
-    console.log("airline_1_Balance_After:", airline_Balance_After);
+    //console.log("airline_1_Balance_After:", airline_Balance_After);
     let restore_balance = BigNumber(airline_Balance_After) + BigNumber(ten_ether_fund);
     assert.equal(restore_balance < airline_Balance_Before, true);
+
+    let funded_airlines = await instanceApp.getNumAirlinesFunded.call();
+    assert.equal(funded_airlines,1);
 
 });
 
 it("(fund) check isFunded is true", async() => {
     let instanceApp = await config.flightSuretyApp;
     let airline_1 = config.owner;
-    let airline_1_details = await instanceApp.getAirline(airline_1);
+    let airline_1_details = await instanceApp.getAirline.call(airline_1);
     assert.equal(airline_1_details[3], true);
 });
 
-
+/*
 it("(voting) no funded airline can vote", async() => {
 
     let instanceApp = await config.flightSuretyApp;
@@ -283,7 +286,7 @@ it("(voting) An airline can't vote again", async() => {
     }
 });
 
-
+/*
 it("(voting) register by multiparty consensus voting", async() => {
     
     let instanceApp = await config.flightSuretyApp;

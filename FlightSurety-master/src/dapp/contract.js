@@ -53,4 +53,12 @@ export default class Contract {
                 callback(error, payload);
             });
     }
+
+    async registerAirline(senderAddress, airlineAddress, airlineName) {
+        let self = this;
+        return await self.flightSuretyApp.methods
+            .registerAirline(airlineAddress, airlineName)
+            .send({from: senderAddress});
+    }
+
 }

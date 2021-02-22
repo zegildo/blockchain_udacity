@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.4.25;
+pragma solidity >=0.4.25;
 
 // It's important to avoid vulnerabilities due to numeric overflow bugs
 // OpenZeppelin's SafeMath library, when used correctly, protects agains such bugs
@@ -140,6 +140,10 @@ contract FlightSuretyApp {
     function withdraw(bytes32 flight_hash) external
     {
         return flightSuretyData.withdraw(msg.sender,flight_hash);
+    }
+
+    function getNumAirlinesFunded() public view returns(uint){
+        return flightSuretyData.getNumAirlinesFunded();
     }
 
     /********************************************************************************************/
@@ -402,4 +406,5 @@ contract FlightSuretyData {
     function getFlight(bytes32 flight_address) external view returns(string, string, string, uint, bool, bool, uint8, address, address[]);
     function getInsuredClient(bytes32 flight_hash) public view returns(uint);
     function getInsuredDue(bytes32 flight_hash) public view returns(uint);
+    function getNumAirlinesFunded() public view returns(uint);
 }

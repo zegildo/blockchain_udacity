@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.4.25;
+pragma solidity >=0.4.25;
 
 import "../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 
@@ -23,7 +23,8 @@ contract FlightSuretyData {
         bool isFunded;
         address[] multiCalls;
     }
-    Airline[] private airlines_list;
+    address[] private airlines_list;
+    address[] private airlines_funded_list;
     mapping(address => Airline) private airlines;
 
     struct Flight {
@@ -199,7 +200,7 @@ contract FlightSuretyData {
             isFunded: isFunded,
             multiCalls: new address[](0)
         });
-        airlines_list.push(new_airline);
+        airlines_list.push(airline_address);
         airlines[airline_address] = new_airline;
     }
 
@@ -237,7 +238,7 @@ contract FlightSuretyData {
         
         Airline storage airline = airlines[airline_address];
         airline.multiCalls.push(airline_voting);
-        if(airline.multiCalls.length >= (getNumAirlinesRegistred().div(2))){
+        if(airline.multiCalls.length >= (getNumAirlinesFunded().div(2))){
             airline.isRegistered = true;
         }
     }
@@ -270,6 +271,7 @@ contract FlightSuretyData {
         require(msg.value == AIRLINE_FUNDING_VALUE, "The initial airline fee is equal to 10 ether");
         contractOwner.transfer(msg.value);
         airlines[addr].isFunded = true;
+        airlines_funded_list.push(addr);
     }
 
     /**
@@ -406,6 +408,10 @@ contract FlightSuretyData {
     */
     function getNumAirlinesRegistred() public view returns(uint){
         return airlines_list.length;
+    }
+
+    function getNumAirlinesFunded() public view returns(uint){
+        return airlines_funded_list.length;
     }
 
     /**
