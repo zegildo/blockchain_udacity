@@ -8,9 +8,9 @@ var Config = async function(accounts) {
     // These test addresses are useful when you need to add
     // multiple users in test scripts
     let testAddresses = [
-        "0x69e1CB5cFcA8A311586e3406ed0301C06fb839a2",
-        "0xF014343BDFFbED8660A9d8721deC985126f189F3",
-        "0x0E79EDbD6A727CfeE09A2b1d0A59F7752d5bf7C9",
+        "0x733B3e6515D7b7B231e428a906E1640C5273CbFB",
+        "0x3688cd54D56ee2e090F57dd744b03d6fA6CC884B",
+        "0x7Eb191cAc0A7cA1F75fc8F67AFEB430697227B83",
         "0x9bC1169Ca09555bf2721A5C9eC6D69c8073bfeB4",
         "0xa23eAEf02F9E0338EEcDa8Fdd0A73aDD781b2A86",
         "0x6b85cc8f612d5457d49775439335f83e12b8cfde",

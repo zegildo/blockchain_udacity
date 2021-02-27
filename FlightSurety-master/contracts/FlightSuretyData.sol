@@ -269,7 +269,7 @@ contract FlightSuretyData {
     requireRegistration(addr)
     {
         require(msg.value == AIRLINE_FUNDING_VALUE, "The initial airline fee is equal to 10 ether");
-        contractOwner.transfer(msg.value);
+        address(this).transfer(msg.value);
         airlines[addr].isFunded = true;
         airlines_funded_list.push(addr);
     }
