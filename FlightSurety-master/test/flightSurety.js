@@ -470,7 +470,8 @@ it("(Pay Insuree) ", async() => {
     let flight_hash = await instanceApp.getFlightKey.call(airline_1, flight_code, timestamp);
 
     let user_balance_before = await web3.eth.getBalance(user_client);
-   
+    user_balance_before = new BigNumber(user_balance_before);
+    
     let insure_due_before = await instanceApp.getInsuredDue(flight_hash, {from:user_client});
     insure_due_before = new BigNumber(insure_due_before);
 
