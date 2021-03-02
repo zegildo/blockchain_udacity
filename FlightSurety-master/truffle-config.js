@@ -1,27 +1,28 @@
 var HDWalletProvider = require("@truffle/hdwallet-provider");
-var mnemonic = "crumble arrive ready faint maple canal universe wisdom just federal donkey neutral";
+var mnemonic = "ancient note swift reject elbow escape ozone era much egg bulk rocket";
 
 module.exports = {
   networks: {
-    development: {
+    "oracle": {
+      accounts: 22,
+      defaultEtherBalance: 500,
+      blockTime: 3,
+      host:"localhost",
+      port:8545,
+      network_id: '*'
+    },
+    "flight": {
       provider: function() {
-        return new HDWalletProvider(mnemonic, "http://127.0.0.1:7545/");
+        return new HDWalletProvider(mnemonic, "ws://127.0.0.1:7545/");
       },
+      websockets: true,
       network_id: '*'
       //gas: 9999999
-    },
-
-    develop: {
-      host:"localhost",
-      port:"7545",
-      accounts: 20,
-      defaultEtherBalance: 500,
-      network_id: '*'    
     }
-  },
-  compilers: {
-    solc: {
-      version: "^0.4.25"
-    }
+  //}//,
+ // compilers: {
+  //  solc: {
+ //     version: "^0.4.25"
+ //   }
   }
 };

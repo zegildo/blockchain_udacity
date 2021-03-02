@@ -93,7 +93,7 @@ contract FlightSuretyApp {
     function getAirline(address address_airline)
     external 
     view 
-    returns(address, string, bool, bool, address[])
+    returns(address, string memory, bool, bool, address[] memory)
     {
         return flightSuretyData.getAirline(address_airline);
     }
@@ -105,13 +105,14 @@ contract FlightSuretyApp {
 
     function fundFee() external payable
     {
+        //address(this).transfer(msg.value);
         flightSuretyData.fundFee.value(msg.value)(msg.sender);
     }
 
     function getFlight(bytes32 flight_address) 
     external
     view
-    returns(string, string, string, uint, bool, bool, uint8, address, address[]){
+    returns(string memory, string memory, string memory, uint, bool, bool, uint8, address, address[] memory){
         return flightSuretyData.getFlight(flight_address);
     }
 
@@ -122,24 +123,24 @@ contract FlightSuretyApp {
         return flightSuretyData.updateFlightStatus(flight_hash, status_code);
     }
     
-    function buy(address airline_address, string fligh_code, uint timestamp) 
+    function buy(address airline_address, string calldata fligh_code, uint timestamp) 
     external 
     payable
     {
-        return flightSuretyData.buy(airline_address, fligh_code, timestamp);
+        return flightSuretyData.buy.value(msg.value)(airline_address, fligh_code, timestamp, msg.sender);
     }
 
     function getInsuredClient(bytes32 flight_hash) public view returns(uint){
-        return flightSuretyData.getInsuredClient(flight_hash);
+        return flightSuretyData.getInsuredClient(flight_hash, msg.sender);
     }
 
     function getInsuredDue(bytes32 flight_hash) public view returns(uint){
-        return flightSuretyData.getInsuredDue(flight_hash);
+        return flightSuretyData.getInsuredDue(flight_hash, msg.sender);
     }
 
     function withdraw(bytes32 flight_hash) external
     {
-        return flightSuretyData.withdraw(msg.sender,flight_hash);
+        return flightSuretyData.withdraw(flight_hash, msg.sender);
     }
 
     function getNumAirlinesFunded() public view returns(uint){
@@ -156,7 +157,7 @@ contract FlightSuretyApp {
     *
     */   
     function registerAirline(address airline_address, 
-                             string airline_name                            )
+                             string memory airline_name                            )
     public
     {
         flightSuretyData.registerAirline(airline_address, airline_name);
@@ -173,7 +174,7 @@ contract FlightSuretyApp {
                             )
     public                           
     {
-        flightSuretyData.registerFlight(flight_code, origin, destination, timestamp);
+        flightSuretyData.registerFlight(flight_code, origin, destination, timestamp, msg.sender);
     }
     
    /**
@@ -191,31 +192,12 @@ contract FlightSuretyApp {
         flightSuretyData.updateFlightStatus(flight_hash, statusCode);
         
         if (statusCode == STATUS_CODE_LATE_AIRLINE) {
-            flightSuretyData.creditInsurees(flight_hash);
+            flightSuretyData.creditInsurees(flight_hash, msg.sender);
         }
     }
 
 
-    // Generate a request for oracles to fetch flight information
-    function fetchFlightStatus
-                        (
-                            address airline,
-                            string flight,
-                            uint256 timestamp                            
-                        )
-                        external
-    {
-        uint8 index = getRandomIndex(msg.sender);
-
-        // Generate a unique key for storing the request
-        bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp));
-        oracleResponses[key] = ResponseInfo({
-                                                requester: msg.sender,
-                                                isOpen: true
-                                            });
-
-        emit OracleRequest(index, airline, flight, timestamp);
-    } 
+   
 
 
 // region ORACLE MANAGEMENT
@@ -233,6 +215,13 @@ contract FlightSuretyApp {
     struct Oracle {
         bool isRegistered;
         uint8[3] indexes;        
+    }
+
+    function getOracleInfo(address registred_oracle) 
+    public 
+    view 
+    requireContractOwner returns(bool, uint8[3] memory) {
+        return (oracles[registred_oracle].isRegistered, oracles[registred_oracle].indexes);
     }
 
     // Track all registered oracles
@@ -280,12 +269,36 @@ contract FlightSuretyApp {
                                     });
     }
 
+     // Generate a request for oracles to fetch flight information
+    function fetchFlightStatus
+                        (
+                            address airline,
+                            string calldata flight,
+                            uint256 timestamp                            
+                        )
+                        external
+    {
+        uint8 index = getRandomIndex(msg.sender);
+
+        // Generate a unique key for storing the request
+        bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp));
+        
+        ResponseInfo memory response = ResponseInfo({
+                                                requester: msg.sender,
+                                                isOpen: true
+                                            });
+        
+        oracleResponses[key] = response;
+
+        emit OracleRequest(index, airline, flight, timestamp);
+    } 
+
     function getMyIndexes
                             (
                             )
                             view
                             external
-                            returns(uint8[3])
+                            returns(uint8[3] memory)
     {
         require(oracles[msg.sender].isRegistered, "Not registered as an oracle");
 
@@ -303,7 +316,7 @@ contract FlightSuretyApp {
                         (
                             uint8 index,
                             address airline,
-                            string flight,
+                            string calldata flight,
                             uint256 timestamp,
                             uint8 statusCode
                         )
@@ -333,11 +346,11 @@ contract FlightSuretyApp {
     function getFlightKey
                         (
                             address airline,
-                            string flight,
+                            string memory flight,
                             uint256 timestamp
                         )
+                        public
                         pure
-                        internal
                         returns(bytes32) 
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
@@ -349,7 +362,7 @@ contract FlightSuretyApp {
                                 address account         
                             )
                             internal
-                            returns(uint8[3])
+                            returns(uint8[3] memory)
     {
         uint8[3] memory indexes;
         indexes[0] = getRandomIndex(account);
@@ -393,18 +406,18 @@ contract FlightSuretyApp {
 
 contract FlightSuretyData {
     function isOperational() public view returns(bool); 
-    function registerAirline(address new_airline, string airline_name) external;
-    function registerFlight(string flight_code, string origin, string destination, uint timestamp) external;
+    function registerAirline(address new_airline, string calldata airline_name) external;
+    function registerFlight(string calldata flight_code, string calldata origin, string calldata destination, uint timestamp, address airline) external;
     function updateFlightStatus(bytes32 flight_hash, uint8 status_code) external;
-    function withdraw(address client_address, bytes32 flight_hash) external;
-    function creditInsurees(bytes32 flight_hash) external;
+    function withdraw(bytes32 flight_hash, address client_address) external;
+    function creditInsurees(bytes32 flight_hash, address client) external;
     function vote(address airline_address, address airline_voting) external;
     function fundFee(address addr) external payable;
-    function buy(address airline_address, string fligh_code, uint timestamp) external payable; 
+    function buy(address airline_address, string calldata fligh_code, uint timestamp, address client) external payable; 
     function getNumAirlinesRegistred() public view returns(uint);
-    function getAirline(address address_airline)external view returns(address, string, bool, bool, address[]);
-    function getFlight(bytes32 flight_address) external view returns(string, string, string, uint, bool, bool, uint8, address, address[]);
-    function getInsuredClient(bytes32 flight_hash) public view returns(uint);
-    function getInsuredDue(bytes32 flight_hash) public view returns(uint);
+    function getAirline(address address_airline)external view returns(address, string memory, bool, bool, address[] memory);
+    function getFlight(bytes32 flight_address) external view returns(string memory, string memory, string memory, uint, bool, bool, uint8, address, address[] memory);
+    function getInsuredClient(bytes32 flight_hash, address client) public view returns(uint);
+    function getInsuredDue(bytes32 flight_hash, address client) public view returns(uint);
     function getNumAirlinesFunded() public view returns(uint);
 }

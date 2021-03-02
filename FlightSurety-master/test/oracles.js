@@ -1,14 +1,18 @@
-
-var Test = require('../config/testConfig.js');
+var FlightSuretyApp = artifacts.require("FlightSuretyApp");
+var FlightSuretyData = artifacts.require("FlightSuretyData");
+//var Test = require('../config/testConfig.js');
 //var BigNumber = require('bignumber.js');
 
 contract('Oracles', async (accounts) => {
 
   const TEST_ORACLES_COUNT = 20;
-  var config;
+  //var config;
   before('setup contract', async () => {
-    config = await Test.Config(accounts);
+    //config = await Test.Config(accounts);
+    console.log(accounts);
+    console.log("length: " + accounts.length);
 
+    
     // Watch contract events
     const STATUS_CODE_UNKNOWN = 0;
     const STATUS_CODE_ON_TIME = 10;
@@ -22,48 +26,59 @@ contract('Oracles', async (accounts) => {
 
   it('can register oracles', async () => {
     
-    // ARRANGE
-    let fee = await config.flightSuretyApp.REGISTRATION_FEE.call();
-
-    // ACT
-    for(let a=1; a<TEST_ORACLES_COUNT; a++) {      
-      await config.flightSuretyApp.registerOracle({ from: accounts[a], value: fee });
-      let result = await config.flightSuretyApp.getMyIndexes.call({from: accounts[a]});
-      console.log(`Oracle Registered: ${result[0]}, ${result[1]}, ${result[2]}`);
+    let instanceApp = await FlightSuretyApp.deployed();
+    let owner = accounts[0];
+    
+    let fee = await instanceApp.REGISTRATION_FEE.call();
+    
+    for(let a=1; a<=TEST_ORACLES_COUNT; a++) {
+      
+      await instanceApp.registerOracle({from:accounts[a], value: fee });
+      let result = await instanceApp.getMyIndexes.call({from:accounts[a]});
+      console.log(`${a} - Oracle Registered: ${result[0]}, ${result[1]}, ${result[2]}`);
     }
+
+    let oracle_1_detail = await instanceApp.getOracleInfo(accounts[1], {from:owner});
+    assert.equal(oracle_1_detail[0], true);
+    
+    let oracle_20_detail = await instanceApp.getOracleInfo(accounts[20], {from:owner});
+    assert.equal(oracle_20_detail[0], true);
   });
 
   it('can request flight status', async () => {
     
-    // ARRANGE
-    let flight = 'ND1309'; // Course number
-    let timestamp = Math.floor(Date.now() / 1000);
+      let instanceApp = await FlightSuretyApp.deployed();
+      let flight = 'AA 1122'; // flight code
+      let dateString = "2020-11-11T11:11:00Z"
+      let timestamp = new Date(dateString).getTime();
+      let owner = accounts[0];
+      
+      await instanceApp.fetchFlightStatus(owner, flight, timestamp);
 
-    // Submit a request for oracles to get status information for a flight
-    await config.flightSuretyApp.fetchFlightStatus(config.firstAirline, flight, timestamp);
-    // ACT
-
-    // Since the Index assigned to each test account is opaque by design
-    // loop through all the accounts and for each account, all its Indexes (indices?)
-    // and submit a response. The contract will reject a submission if it was
-    // not requested so while sub-optimal, it's a good test of that feature
-    for(let a=1; a<TEST_ORACLES_COUNT; a++) {
-
-      // Get oracle information
-      let oracleIndexes = await config.flightSuretyApp.getMyIndexes.call({ from: accounts[a]});
-      for(let idx=0;idx<3;idx++) {
+      var numResponses = 0;
+      for(let a=1; a<=TEST_ORACLES_COUNT; a++) {
+      
+        let oracleIndexes = await instanceApp.getMyIndexes.call({ from: accounts[a]});
 
         try {
-          // Submit a response...it will only be accepted if there is an Index match
-          await config.flightSuretyApp.submitOracleResponse(oracleIndexes[idx], config.firstAirline, flight, timestamp, STATUS_CODE_ON_TIME, { from: accounts[a] });
-
-        }
-        catch(e) {
-          // Enable this when debugging
-           console.log('\nError', idx, oracleIndexes[idx].toNumber(), flight, timestamp);
-        }
-
-      }
+      
+          await instanceApp.submitOracleResponse(oracleIndexes[0], owner, flight, timestamp, STATUS_CODE_ON_TIME, { from: accounts[a] });
+          numResponses+=1;
+    
+          } catch(e) {
+    
+            console.log(`\nOracle no. ${a} not chosen`, 0, oracleIndexes[0].toNumber(), flight, timestamp);
+          }
+    }
+    console.log("Num valid responses: ", numResponses)
+    if (numResponses >= 3) {
+       
+        let flight_hash = await instanceApp.getFlightKey(owner, flight, timestamp);
+        let flightInfo = await instanceApp.getFlight(flight_hash);
+        console.log("Flight code: ", flightInfo[0]);
+        console.log("Status code: ", Number(flightInfo[3]));
+        assert.equal(flightInfo[0], "AA 1122");
+        assert.equal(flightInfo[3], STATUS_CODE_ON_TIME);
     }
 
 

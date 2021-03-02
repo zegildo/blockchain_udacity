@@ -166,7 +166,7 @@ contract FlightSuretyData {
     */   
     function registerAirline(
                              address new_airline, 
-                             string airline_name
+                             string calldata airline_name
                              //address main_airline 
                             )
     external 
@@ -187,7 +187,7 @@ contract FlightSuretyData {
     */
     function createAirline( 
                             address airline_address, 
-                            string airline_name,
+                            string memory airline_name,
                             bool isRegistered,
                             bool isFunded                          
                             ) 
@@ -210,7 +210,7 @@ contract FlightSuretyData {
     function getAirline(address address_airline)
     external 
     view 
-    returns(address, string, bool, bool, address[])
+    returns(address, string memory, bool, bool, address[] memory)
     {
 
         Airline memory airline = airlines[address_airline];
@@ -233,7 +233,7 @@ contract FlightSuretyData {
     requireFund(airline_voting)
     {          
         
-        bool voted = checkDoubleVote(airline_voting);
+        bool voted = checkDoubleVote(airline_address, airline_voting);
         require(!voted, "The Airline already voted!");
         
         Airline storage airline = airlines[airline_address];
@@ -246,11 +246,11 @@ contract FlightSuretyData {
     /**
         @dev Check Double Vote
      */
-    function checkDoubleVote(address airline_address) private view returns(bool){
+    function checkDoubleVote(address airline_address, address airline_voting) private view returns(bool){
         bool voted = false;
         uint length = airlines[airline_address].multiCalls.length; 
         for (uint i = 0; i < length; i++) {
-            if (airlines[airline_address].multiCalls[i] == msg.sender) {
+            if (airlines[airline_address].multiCalls[i] == airline_voting) {
                 voted = true;
                 break;
             }
@@ -269,7 +269,7 @@ contract FlightSuretyData {
     requireRegistration(addr)
     {
         require(msg.value == AIRLINE_FUNDING_VALUE, "The initial airline fee is equal to 10 ether");
-        address(this).transfer(msg.value);
+        //contract.address.transfer(msg.value);
         airlines[addr].isFunded = true;
         airlines_funded_list.push(addr);
     }
@@ -278,17 +278,18 @@ contract FlightSuretyData {
     * @dev Register a future flight for insuring.
     *
     */  
-    function registerFlight(string flight_code, 
-                            string origin, 
-                            string destination, 
-                            uint timestamp
+    function registerFlight(string calldata flight_code, 
+                            string calldata origin, 
+                            string calldata destination, 
+                            uint timestamp,
+                            address airline
                             )
     external
     requireIsOperational
-    requireRegistration(msg.sender)
-    requireFund(msg.sender)
+    requireRegistration(airline)
+    requireFund(airline)
     {
-        bytes32 flight_hash = getFlightKey(msg.sender, flight_code, timestamp);
+        bytes32 flight_hash = getFlightKey(airline, flight_code, timestamp);
         require(!flights[flight_hash].isRegistered, "The flight is already registered");
         
         Flight memory new_flight = Flight({
@@ -299,7 +300,7 @@ contract FlightSuretyData {
             isRegistered:true,
             isInsured:false,
             status:0,
-            airline: msg.sender,
+            airline: airline,
             insured_clients:new address[](0)
          });
         
@@ -309,7 +310,7 @@ contract FlightSuretyData {
     function getFlight(bytes32 flight_hash) 
     external
     view
-    returns(string, string, string, uint, bool, bool, uint8, address, address[])
+    returns(string memory, string memory, string memory, uint, bool, bool, uint8, address, address[]memory)
     {
         Flight storage flight = flights[flight_hash];
         return(
@@ -343,8 +344,9 @@ contract FlightSuretyData {
     */   
     function buy(
                 address airline_address,
-                string fligh_code,
-                uint timestamp                             
+                string calldata fligh_code,
+                uint timestamp,
+                address client                             
                 )
     external
     payable
@@ -353,31 +355,31 @@ contract FlightSuretyData {
     {
         require((msg.value > 0 ether && msg.value <= 1 ether), "It is not possible to accept this value of insure");
         bytes32 flight_hash = getFlightKey(airline_address, fligh_code, timestamp);
-        require(insured_clients[flight_hash][msg.sender] == 0, "User already bought insurance for this flight");
+        require(insured_clients[flight_hash][client] == 0, "User already bought insurance for this flight");
         
         flights[flight_hash].isInsured = true;
-        flights[flight_hash].insured_clients.push(msg.sender);
-        insured_clients[flight_hash][msg.sender] = msg.value;
+        flights[flight_hash].insured_clients.push(client);
+        insured_clients[flight_hash][client] = msg.value;
     }
 
     /**
      *  @dev Credits payouts to insurees
     */
-    function creditInsurees(bytes32 flight_hash) 
+    function creditInsurees(bytes32 flight_hash, address client) 
     external
     requireIsOperational
     requireFlightRegister(flight_hash)
     requireFlightIsInsured(flight_hash)
     {
-        uint insure_payed_by_passanger = insured_clients[flight_hash][msg.sender];
-        insured_due[flight_hash][msg.sender] = (insure_payed_by_passanger.mul(15)).div(10); 
+        uint insure_payed_by_passanger = insured_clients[flight_hash][client];
+        insured_due[flight_hash][client] = (insure_payed_by_passanger.mul(15)).div(10); 
     }
     
     /**
      *  @dev Transfers eligible payout funds to insuree
      *
     */
-    function withdraw(address client_address, bytes32 flight_hash) 
+    function withdraw(bytes32 flight_hash, address payable client_address) 
     external 
     requireIsOperational
     requireFlightRegister(flight_hash)
@@ -395,8 +397,8 @@ contract FlightSuretyData {
                             string memory flight,
                             uint256 timestamp
                         )
+                        public
                         pure
-                        internal
                         returns(bytes32) 
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
@@ -418,16 +420,16 @@ contract FlightSuretyData {
     * @dev Get the value paid of insure.
     *
     */
-    function getInsuredClient(bytes32 flight_hash) public view returns(uint){
-        return insured_clients[flight_hash][msg.sender];
+    function getInsuredClient(bytes32 flight_hash, address client) public view returns(uint){
+        return insured_clients[flight_hash][client];
     }
 
     /**
     * @dev Get the value calculated after airline fail.
     *
     */
-    function getInsuredDue(bytes32 flight_hash) public view returns(uint){
-        return insured_due[flight_hash][msg.sender];
+    function getInsuredDue(bytes32 flight_hash, address client) public view returns(uint){
+        return insured_due[flight_hash][client];
     }
 }
 
