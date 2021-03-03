@@ -123,7 +123,7 @@ contract FlightSuretyApp {
         return flightSuretyData.updateFlightStatus(flight_hash, status_code);
     }
     
-    function buy(address airline_address, string calldata fligh_code, uint timestamp) 
+    function buy(address airline_address, string fligh_code, uint timestamp) 
     external 
     payable
     {
@@ -196,8 +196,6 @@ contract FlightSuretyApp {
         }
     }
 
-
-   
 
 
 // region ORACLE MANAGEMENT
@@ -273,7 +271,7 @@ contract FlightSuretyApp {
     function fetchFlightStatus
                         (
                             address airline,
-                            string calldata flight,
+                            string flight,
                             uint256 timestamp                            
                         )
                         external
@@ -316,7 +314,7 @@ contract FlightSuretyApp {
                         (
                             uint8 index,
                             address airline,
-                            string calldata flight,
+                            string flight,
                             uint256 timestamp,
                             uint8 statusCode
                         )
@@ -406,14 +404,14 @@ contract FlightSuretyApp {
 
 contract FlightSuretyData {
     function isOperational() public view returns(bool); 
-    function registerAirline(address new_airline, string calldata airline_name) external;
-    function registerFlight(string calldata flight_code, string calldata origin, string calldata destination, uint timestamp, address airline) external;
+    function registerAirline(address new_airline, string airline_name) external;
+    function registerFlight(string flight_code, string origin, string destination, uint timestamp, address airline) external;
     function updateFlightStatus(bytes32 flight_hash, uint8 status_code) external;
     function withdraw(bytes32 flight_hash, address client_address) external;
     function creditInsurees(bytes32 flight_hash, address client) external;
     function vote(address airline_address, address airline_voting) external;
     function fundFee(address addr) external payable;
-    function buy(address airline_address, string calldata fligh_code, uint timestamp, address client) external payable; 
+    function buy(address airline_address, string fligh_code, uint timestamp, address client) external payable; 
     function getNumAirlinesRegistred() public view returns(uint);
     function getAirline(address address_airline)external view returns(address, string memory, bool, bool, address[] memory);
     function getFlight(bytes32 flight_address) external view returns(string memory, string memory, string memory, uint, bool, bool, uint8, address, address[] memory);

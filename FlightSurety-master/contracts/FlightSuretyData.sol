@@ -166,7 +166,7 @@ contract FlightSuretyData {
     */   
     function registerAirline(
                              address new_airline, 
-                             string calldata airline_name
+                             string airline_name
                              //address main_airline 
                             )
     external 
@@ -278,9 +278,9 @@ contract FlightSuretyData {
     * @dev Register a future flight for insuring.
     *
     */  
-    function registerFlight(string calldata flight_code, 
-                            string calldata origin, 
-                            string calldata destination, 
+    function registerFlight(string flight_code, 
+                            string origin, 
+                            string destination, 
                             uint timestamp,
                             address airline
                             )
@@ -344,7 +344,7 @@ contract FlightSuretyData {
     */   
     function buy(
                 address airline_address,
-                string calldata fligh_code,
+                string fligh_code,
                 uint timestamp,
                 address client                             
                 )
@@ -379,7 +379,7 @@ contract FlightSuretyData {
      *  @dev Transfers eligible payout funds to insuree
      *
     */
-    function withdraw(bytes32 flight_hash, address payable client_address) 
+    function withdraw(bytes32 flight_hash, address client_address) 
     external 
     requireIsOperational
     requireFlightRegister(flight_hash)

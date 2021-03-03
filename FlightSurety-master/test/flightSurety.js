@@ -485,7 +485,7 @@ it("(Pay Insuree) ", async() => {
     user_balance_after = new BigNumber(user_balance_after);
 
     assert.equal(insure_due_after, 0);
-    assert.equal((user_balance_before < user_balance_after), true);
+    assert.equal(user_balance_before < user_balance_after, true);
 
 });
  
