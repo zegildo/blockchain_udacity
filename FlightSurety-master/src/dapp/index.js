@@ -14,7 +14,29 @@ import './flightsurety.css';
             console.log(error,result);
             display('Operational Status', 'Check if contract is operational', [ { label: 'Operational Status', error: error, value: result} ]);
         });
-    
+
+        contract.getAirlinesRegistred((error, result) => {
+
+            console.log("result:", result);
+            console.log("result:", result.lenght);
+
+            var $select = $('<select/>', {
+                'class':"form-select",
+                'id':'sender_airline'
+            });
+            for (var i = 0; i < result.length; i++) {
+                if(i == 0){
+                    $select.append('<option selected value=' + result[i] + '>' + result[i]+ '</option>');
+                }else{
+                    $select.append('<option selected value=' + result[i] + '>' + result[i]+ '</option>');
+                }
+            }
+            //$select.appendTo('#create_airline');
+           
+            $select.appendTo('#div_create_airlines').hide().show();
+            //$select.selectmenu("refresh", true);
+
+        });
 
         // User-submitted transaction
         DOM.elid('submit-oracle').addEventListener('click', () => {
@@ -24,11 +46,29 @@ import './flightsurety.css';
                 display('Oracles', 'Trigger oracles', [ { label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp} ]);
             });
         })
+
+        // Airline registers Flights
+        DOM.elid('submit_create_airline').addEventListener('click', () => {
+            let name = DOM.elid('name_airline').value;
+            let address = DOM.elid('addr_airline').value;
+            let sender = DOM.elid('sender_airline').value;
+
+            if(name != '' || address != '' || sender != ''){
+                //Forward call to smart contract
+                contract.registerAirline(sender, address, name, (error, result) => {
+                    display('Airline Registered', 'Airline'+name+'was registered', [ { label: 'Registration:', error: error,  value: 'Success - registered. ' } ]);
+                    $('#sender_airline').append('<option value="' + sender + '">' + sender + '</option>');
+                    $('#sender_airline').selectmenu('refresh', true);
+                    console.log("findei");
+                });
+            }else{
+                alert("Please, fill all empty spaces!");
+            }
+            
+        });
+
     
     });
-
-    
-
 })();
 
 

@@ -79,6 +79,9 @@ contract FlightSuretyApp {
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
+    function getAirlinesRegistred() public view returns(address[]){
+        return flightSuretyData.getAirlinesRegistred();
+    }
 
     function isOperational() public view returns(bool) 
     {
@@ -281,12 +284,10 @@ contract FlightSuretyApp {
         // Generate a unique key for storing the request
         bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp));
         
-        ResponseInfo memory response = ResponseInfo({
+        oracleResponses[key] = ResponseInfo({
                                                 requester: msg.sender,
                                                 isOpen: true
                                             });
-        
-        oracleResponses[key] = response;
 
         emit OracleRequest(index, airline, flight, timestamp);
     } 
@@ -418,4 +419,5 @@ contract FlightSuretyData {
     function getInsuredClient(bytes32 flight_hash, address client) public view returns(uint);
     function getInsuredDue(bytes32 flight_hash, address client) public view returns(uint);
     function getNumAirlinesFunded() public view returns(uint);
+    function getAirlinesRegistred() external view returns(address[]);
 }

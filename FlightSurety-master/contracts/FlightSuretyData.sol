@@ -133,6 +133,9 @@ contract FlightSuretyData {
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
 
+    function getAirlinesRegistred() external view returns(address[]){
+        return airlines_list;
+    }
     /**
     * @dev Get operating status of contract
     *

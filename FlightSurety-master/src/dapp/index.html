@@ -4,10 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
     <title>FlightSurety</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    
     
     <!--link rel="icon" type="image/x-icon" href="favicon.ico"-->
 </head>
@@ -46,8 +47,10 @@
             
             <section id="create_airline" class="create_airline">
                 <h2>Create Airline</h2>
-                <input type="text" id="name_airline" placeholder="Name">
-                <input type="text" id="addr_airline" placeholder="Address">
+                <div id="div_create_airlines">
+                    <input type="text" id="name_airline" placeholder="Name">
+                    <input type="text" id="addr_airline" placeholder="New Address">
+                </div>
                 <button class="btn btn-primary" id="submit_create_airline">Create</button>
             </section>
             
@@ -86,21 +89,6 @@
                     </div>
                 </form>
             </section>
-            
-            <section id="update-flight" class="update-flight">
-                <h2>Update Flight</h2>
-                <form>
-                    <div class="form-row">
-                        <div class="col">
-                            <input type="text" id="update_airline" placeholder="Airline Address"> 
-                            <input type="text" id="update_flight-code" placeholder="Flight Code"> 
-                            <input type="text" id="update_date" placeholder="Date">  
-                            <button type="submit" class="btn btn-primary">Update</button>                        
-                        </div>
-                    </div>
-                </form>
-               
-            </section>
     
             <section id="claim_withdraw" class="claim_withdraw">
                 <h2>Claim Withdraw</h2>
@@ -131,14 +119,11 @@
             </section>
         </div>
     </main>
-  
+  <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
-<script>
-var atual_on = '';
-var anterior_on = '';
-
-function changeView(id){
-    $(id).css("visibility", "visible");
-}
-</script>
 </html>

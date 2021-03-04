@@ -3,9 +3,6 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
 }
-.main-content {
-    visibility: hidden;
-  }
 
 .container {
     margin-top: 400px;
