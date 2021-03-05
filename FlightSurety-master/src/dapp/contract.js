@@ -79,25 +79,25 @@ export default class Contract {
 
     registerFlight(flight_code, origin, destination, timestamp, sender, callback){
         let self = this;
+        console.log(flight_code, origin, destination, timestamp, sender);
+
         self.flightSuretyApp.methods.registerFlight(
             flight_code, 
             origin, 
             destination, 
-            timestamp).send({from: sender}, callback);
+            timestamp).send({from: sender, gas: 5000000}, (error, result) => {
+                callback(error, flight_code);
+            });;
     }
 
     buy(airline_address, fligh_code, timestamp, value, sender, callback){
         let self = this;
-        let amount = web3.utils.toWei(value, "ether");
+        let amount = self.web3.utils.toWei(value, "ether");
+        console.log(airline_address, fligh_code, timestamp, amount, sender);
         self.flightSuretyApp.methods.buy(
             airline_address, 
             fligh_code, 
-            timestamp).send({from:sender, value:amount}, callback);
-    }
-
-    claimWithdraw(flight_hash, sender, callback){
-        let self = this;
-        self.flightSuretyApp.methods.withdraw(flight_hash).send({from:sender}, callback);
+            timestamp).send({from:sender, value:amount,  gas: 5000000}, callback);
     }
 
     getFlightKey(airline, flight, timestamp, callback){

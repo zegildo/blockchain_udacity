@@ -53,55 +53,52 @@ web3.eth.getAccounts().then(accounts => {
 
     }); //end forEach oracle*/
 
-    flightSuretyApp.events.OracleRequest(
-      {
-        fromBlock: 'latest'
-      }, 
-      function (error, event){
-        if (error){
-          console.log("Error:",error);
-    
-        }else{
-    
-          let event_values = event['returnValues'];
-          console.log("events:",event_values);
-          let index = event_values['index'];
-          let airline = event_values['airline'];
-          let flight = event_values['flight'];
-          let timestamp = event_values['timestamp'];
-          let status = Math.floor(Math.random() * 6) * 10;
-    
-          oracles.forEach(oracle => {
-    
-            flightSuretyApp.methods.getMyIndexes().call({
-                  "from": oracle,
-                  "gas": 4712388,
-                  "gasPrice": 100000000000
-                }).then(result => {
-    
-                  if(result[0]==index || result[1]==index || result[2]==index){        
-                    flightSuretyApp.methods
-                    .submitOracleResponse(index, airline, flight, timestamp, status).send({
-                      "from": oracle,
-                      "gas": 4712388,
-                      "gasPrice": 100000000000
-                    }).then(result => {
-                      console.log('Oracle ['+oracle+'] response ok.') 
-                    }).catch(error=>{
-                      console.log('Could not submit oracle response because: '+error)
-                    });
-                  }
-    
-                }).catch(error => {
-                  console.log('Oracle indices error: '+error);
-                })
-          }); 
-        }
-      });
-
   });
 
-
+  flightSuretyApp.events.OracleRequest(
+    {
+      fromBlock: 'latest'
+    }, 
+    function (error, event){
+      if (error){
+        console.log("Error:",error);
+      }else{
+  
+        let event_values = event['returnValues'];
+        console.log("events:",event_values);
+        let index = event_values['index'];
+        let airline = event_values['airline'];
+        let flight = event_values['flight'];
+        let timestamp = event_values['timestamp'];
+        let status = Math.floor(Math.random() * 6) * 10;
+  
+        oracles.forEach(oracle => {
+  
+          flightSuretyApp.methods.getMyIndexes().call({
+                "from": oracle,
+                "gas": 4712388,
+                "gasPrice": 100000000000
+              }).then(result => {
+  
+                if(result[0]==index || result[1]==index || result[2]==index){        
+                  flightSuretyApp.methods
+                  .submitOracleResponse(index, airline, flight, timestamp, status).send({
+                    "from": oracle,
+                    "gas": 4712388,
+                    "gasPrice": 100000000000
+                  }).then(result => {
+                    console.log('Oracle ['+oracle+'] response ok.') 
+                  }).catch(error=>{
+                    console.log('Could not submit oracle response because: '+error)
+                  });
+                }
+  
+              }).catch(error => {
+                console.log('Oracle indices error: '+error);
+              })
+        }); 
+      }
+    });
 
 const app = express();
 app.get('/api', (req, res) => {

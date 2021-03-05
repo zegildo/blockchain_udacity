@@ -393,6 +393,35 @@ it("(Flight) create a flight", async() => {
     assert.equal(flight_info[7], airline_1);    
 });
 
+it("(Flight) create a flight - problem interface", async() => {
+    
+    //use this site: https://www.kwe.co.jp/en/useful-contents/code1
+
+    let instanceApp = await FlightSuretyApp.deployed();
+
+    let airline_1 = accounts[0];
+    let flight_code = "567 AA";
+    let origin = "REC";
+    let destination = "BSB";
+    //let date = "2020-06-09T12:00:00Z"
+    let timestamp = 1591704000000;
+
+    await instanceApp.registerFlight(flight_code, origin, destination, timestamp, {from:airline_1});
+    
+    let flight_hash = await instanceApp.getFlightKey.call(airline_1, flight_code, timestamp);
+    let flight_info = await instanceApp.getFlight.call(flight_hash);
+
+    assert.equal(flight_info[0],flight_code);
+    assert.equal(flight_info[1],origin);
+    assert.equal(flight_info[2],destination);
+    assert.equal(flight_info[3],timestamp);
+    assert.equal(flight_info[4],true);
+    assert.equal(flight_info[5],false);
+    assert.equal(flight_info[6],0);
+    assert.equal(flight_info[7], airline_1);    
+});
+//567 AA REC BSB 1591704000000 0x024Fa683EB32b6340f42c99e6e4575Acb17F706A
+
 it("(Flight) Update Status", async() => {
     
     let instanceApp = await FlightSuretyApp.deployed();

@@ -38,13 +38,15 @@ import './flightsurety.css';
             let name = DOM.elid('name_airline').value;
             let address = DOM.elid('addr_airline').value;
 
-            if(name != '' || address != ''){
+            if(name != '' && address != ''){
                
                 contract.registerAirline(address, name, (error, result) => {
-                    display('Airline Registered', 'Airline'+name+'was registered', [ { label: 'Registration:', error: error,  value: 'Success - registered. ' } ]);
-                    $('#registered_airlines').append('<option value="' + address + '">' + address + '</option>');
-                    $('#registered_airlines').show();
-                    alert('Airline'+name+'was registered');
+                    display('Airline Registered', 'Airline '+name+' was registered', [ { label: 'Registration:', error: error,  value: 'Success - registered. ' } ]);
+                    if(result){
+                        $('#registered_airlines').append('<option value="' + address + '">' + address + '</option>');
+                        $('#registered_airlines').show();
+                    }
+                   
                 });
             }else{
                 alert("Please, fill all empty spaces in Create Airline Section!");
@@ -110,51 +112,56 @@ import './flightsurety.css';
             let flight_code = DOM.elid('flight_code').value;
             let flight_origin = DOM.elid('flight_origin').value;
             let flight_destination = DOM.elid('flight_destination').value;
-            let flight_timestamp = DOM.elid('flight_timestamp').value;
-            let address_airline = DOM.elid('flight_airlines').value;
+            let flight_timestamp = new Date("2020-06-09T12:00:00Z").getTime();
+            let address_airline = DOM.elid('flight_airlines');
 
-            if(flight_code != '' && flight_origin != '' && flight_destination != '' && flight_timestamp != '' && address_airline != ''){
-                console.log(flight_code, flight_origin, flight_destination, flight_timestamp, address_airline);
+            
+            if(address_airline == null){
+                alert("There are no airlines with the 10 ether fee paid!");
+            }else{
 
-                contract.registerFlight(flight_code, flight_origin, flight_destination, flight_timestamp, address_airline, (error, result) => {
-                    alert("Error:",error);
-                    alert("Result:",result);
-                    display('Registration Flight', 'Flight '+flight_code, [ { label: 'Registration:', error: error,  value: 'Success - Flight registered' } ]);
-                });
-
-
-                contract.getFlightKey(address_airline, flight_code, flight_timestamp, (error, result) => {
+                address_airline = DOM.elid('flight_airlines').value;
+                if(flight_code != '' && flight_origin != '' && flight_destination != '' && flight_timestamp != '' && address_airline != ''){
                     
-                    let select_ok = DOM.elid('options_to_buy_insure');
-
-                    if(select_ok != null){
-                        $('#options_to_buy_insure').append('<option value="' + result + '">' + flight_code + '</option>');
-                        $('#options_to_submit_oracle').append('<option value="' + result + '">' + flight_code + '</option>');
-                        
-                        $('#div_buy_insure').show();
-                        $('#div_submit_oracles').show();
-                    }else{
-  
-                        var $select_insuree = $('<select/>', {
-                            'class':"form-select",
-                            'id':'options_to_buy_insure'
-                        });
-                        var $select_oracle = $('<select/>', {
-                            'class':"form-select",
-                            'id':'options_to_submit_oracle'
-                        });
-                        $select_insuree.append('<option value="' + result + '">' + flight_code + '</option>');
-                        $select_insuree.appendTo('#div_buy_insure');
-                        $('#div_buy_insure').show();
-
-                        $select_oracle.append('<option value="' + result + '">' + flight_code + '</option>');
-                        $select_oracle.appendTo('#div_submit_oracles');
-                        $('#div_submit_oracles').show();
-                    }
+                    contract.registerFlight(flight_code, flight_origin, flight_destination, flight_timestamp, address_airline, (error, result) => {
+                        display('Registration Flight', 'Flight '+flight_code, [ { label: 'Registration:', error: error,  value: 'Success - Flight registered' } ]);
                     });
     
-            }else{
-                alert("Please, fill all empty spaces in Registration Flight Section!");
+    
+                    contract.getFlightKey(address_airline, flight_code, flight_timestamp, (error, result) => {
+                        
+                        let select_ok = DOM.elid('options_to_buy_insure');
+    
+                        if(select_ok != null){
+                            $('#options_to_buy_insure').append('<option value="' + flight_code + '">' + flight_code + '</option>');
+                            $('#options_to_submit_oracle').append('<option value="' + result + '">' + flight_code + '</option>');
+                            
+                            $('#div_buy_insure').show();
+                            $('#div_submit_oracles').show();
+                        }else{
+      
+                            var $select_insuree = $('<select/>', {
+                                'class':"form-select",
+                                'id':'options_to_buy_insure'
+                            });
+                            var $select_oracle = $('<select/>', {
+                                'class':"form-select",
+                                'id':'options_to_submit_oracle'
+                            });
+                            $select_insuree.append('<option value="' + flight_code + '">' + flight_code + '</option>');
+                            $select_insuree.appendTo('#div_buy_insure');
+                            $('#div_buy_insure').show();
+    
+                            $select_oracle.append('<option value="' + result + '">' + flight_code + '</option>');
+                            $select_oracle.appendTo('#div_submit_oracles');
+                            $('#div_submit_oracles').show();
+                        }
+                        });
+        
+                }else{
+                    alert("Please, fill all empty spaces in Registration Flight Section!");
+                }
+
             }
 
         });
@@ -162,33 +169,66 @@ import './flightsurety.css';
          //Buy Insuree.
          DOM.elid('submit_buy_insure').addEventListener('click', () => {
 
-            let address_airline = DOM.elid('buy_insure_airlines').value;
+            let address_airline = DOM.elid('buy_insure_airlines');
             let address_client = DOM.elid('buy_client_address').value;
-            let flight_code = DOM.elid('buy_flight_code').value;
+            let flight_code = DOM.elid('options_to_buy_insure');
             let value = DOM.elid('buy_value').value;
-            let timestamp = DOM.elid('buy_timestamp').value;
+            let timestamp = new Date("2020-06-09T12:00:00Z").getTime();
 
-            contract.buy(address_airline, flight_code, timestamp, value, address_client, (error, result) => {
-                display('Buy Insuree Done', 'User'+address_client+' buy a insure for a flight: '+flight_code, [ { label: 'Registration:', error: error,  value: 'Success - Insuree purchased' } ]);
-            });
+            if(flight_code == null){
+                alert("There isn't register flight!");
+
+            }else{
+
+                address_airline = DOM.elid('buy_insure_airlines').value;
+                flight_code = DOM.elid('options_to_buy_insure').value;
+            
+                if(address_airline != '' && address_client != '' && flight_code != '' && value != '' && timestamp != ''){
+                    contract.buy(address_airline, flight_code, timestamp, value, address_client, (error, result) => {
+                        display('Buy Insuree Done', 'User '+address_client+' buy a insure for a flight: '+flight_code, [ { label: 'Registration:', error: error,  value: 'Success - Insuree purchased' } ]);
+                    
+                        let select_ok = DOM.elid('options_to_claim_withdraw');
+                        let flight_hash = $("#options_to_submit_oracle").filter(function() {
+                            return $(this).text() == flight_code;
+                          }).val();
+
+                        if(select_ok != null){
+                            $('#options_to_claim_withdraw').append('<option value="' + flight_hash + '">' + flight_code + '</option>');
+                            $('#div_claim_w_flight_code').show();
+                        }else{
+      
+                            var $select_claim_w = $('<select/>', {
+                                'class':"form-select",
+                                'id':'options_to_claim_w'
+                            });
+                            $select_claim_w.append('<option value="' + flight_hash + '">' + flight_code + '</option>');
+                            $select_claim_w.appendTo('#div_claim_w_flight_code');
+                            $('#div_claim_w_flight_code').show();
+                        }
+
+                    });
+                }else{
+                    alert("Please, fill all empty spaces in Buy Insuree Section!");
+                }
+            }
 
          });
 
-        //Claim Insuree.
-        DOM.elid('submit_claim_withdraw').addEventListener('click', () => {
-            let address_client = DOM.elid('claim_w_client_addr').value;
-            let flight_code = DOM.elid('claim_w_flight_code').value;
-
-            console.log('submit_claim_withdraw:', address_client, flight_code);
-        });
 
         // User-submitted transaction
         DOM.elid('submit-oracle').addEventListener('click', () => {
-            let flight = DOM.elid('options_to_submit_oracle').value;
-            // Write transaction
-            contract.fetchFlightStatus(flight, (error, result) => {
-                display('Oracles', 'Trigger oracles', [ { label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp} ]);
-            });
+            let flight = DOM.elid('options_to_submit_oracle');
+
+            if(flight == null){
+                alert("There isn't register flight!");
+            }else{
+                // Write transaction
+                flight = DOM.elid('options_to_submit_oracle').value;
+                contract.fetchFlightStatus(flight, (error, result) => {
+                    display('Oracles', 'Trigger oracles', [ { label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp} ]);
+                });
+            }
+            
         })
 
 
