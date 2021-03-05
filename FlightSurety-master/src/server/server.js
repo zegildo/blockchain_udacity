@@ -58,7 +58,6 @@ web3.eth.getAccounts().then(accounts => {
         fromBlock: 'latest'
       }, 
       function (error, event){
-        console.log("entrei...");
         if (error){
           console.log("Error:",error);
     

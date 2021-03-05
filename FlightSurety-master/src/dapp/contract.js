@@ -62,48 +62,47 @@ export default class Contract {
             });
     }
 
-    registerAirline(senderAddress, airlineAddress, airlineName){
-        console.log("registerAirline: ",senderAddress, airlineAddress, airlineName);
+    registerAirline(airlineAddress, airlineName, callback){
         let self = this;
+        console.log("registerAirline: ",self.owner, airlineAddress, airlineName);
         self.flightSuretyApp.methods
             .registerAirline(airlineAddress, airlineName)
-            .send({from: senderAddress, gas: 5000000});
+            .send({from: self.owner, gas: 5000000}, callback);
     }
 
-    pay(sender){
+    pay(sender, value, callback){
         console.log("paying tax");
         let self = this;
-        let ten_ether_fund = this.web3.utils.toWei("10", "ether");
-        self.flightSuretyApp.methods.fundFee().send({from: sender, value:ten_ether_fund});
+        let amount = self.web3.utils.toWei(value, "ether");
+        self.flightSuretyApp.methods.fundFee().send({from:sender, value:amount}, callback);
     }
 
-    registerFlight(flight_code, origin, destination, timestamp, sender){
+    registerFlight(flight_code, origin, destination, timestamp, sender, callback){
         let self = this;
         self.flightSuretyApp.methods.registerFlight(
             flight_code, 
             origin, 
             destination, 
-            timestamp).send({from: sender});
+            timestamp).send({from: sender}, callback);
     }
 
-    buy(airline_address, fligh_code, timestamp, value, sender){
+    buy(airline_address, fligh_code, timestamp, value, sender, callback){
         let self = this;
-        let amount = this.web3.utils.toWei(value, "ether");
+        let amount = web3.utils.toWei(value, "ether");
         self.flightSuretyApp.methods.buy(
             airline_address, 
             fligh_code, 
-            timestamp).send({from:sender, value:amount});
+            timestamp).send({from:sender, value:amount}, callback);
     }
 
-    claimWidraw(flight_hash, sender){
+    claimWithdraw(flight_hash, sender, callback){
         let self = this;
-        self.flightSuretyApp.methods.withdraw(flight_hash);
+        self.flightSuretyApp.methods.withdraw(flight_hash).send({from:sender}, callback);
     }
 
-    getFlightKey(airline, flight, timestamp){
+    getFlightKey(airline, flight, timestamp, callback){
         let self = this;
-        self.flightSuretyApp.methods.getFlightKey(airline, flight, timestamp);
-
+        self.flightSuretyApp.methods.getFlightKey(airline, flight, timestamp).send({from:airline}, callback);
     }
 
 }
