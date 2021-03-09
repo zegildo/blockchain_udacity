@@ -64,43 +64,44 @@ import './flightsurety.css';
 
                 contract.pay(address_airline, amount, (error, result) => {
                     display('Fee Paid', 'Airline '+address_airline+' paid the fee', [ { label: 'Registration:', error: error,  value: 'Success - paid. ' } ]);
-                    //remove option already paid fee.
-                    $('#registered_airlines').children('option[value="'+address_airline+'"]').remove();
                     
-                    //add airline on flight option...
-                    let select_ok = DOM.elid('flight_airlines');
+                    if(result){
+                        //remove option already paid fee.
+                        $('#registered_airlines').children('option[value="'+address_airline+'"]').remove();
+                                            
+                        //add airline on flight option...
+                        let select_ok = DOM.elid('flight_airlines');
 
-                    if(select_ok != null){
-                        $('#flight_airlines').append('<option value="' + address_airline + '">' + address_airline + '</option>');
-                        $('#div_register_flight').show();
+                        if(select_ok != null){
+                            $('#flight_airlines').append('<option value="' + address_airline + '">' + address_airline + '</option>');
+                            $('#div_register_flight').show();
 
-                        $('#buy_insure_airlines').append('<option value="' + address_airline + '">' + address_airline + '</option>');
-                        $('#div_buy_insure_airlines').show();
+                            $('#buy_insure_airlines').append('<option value="' + address_airline + '">' + address_airline + '</option>');
+                            $('#div_buy_insure_airlines').show();
 
-                    }else{
-  
-                        var $select = $('<select/>', {
-                            'class':"form-select",
-                            'id':'flight_airlines'
-                        });
-                        $select.append('<option value="' + address_airline + '">' + address_airline + '</option>');
-                        $select.appendTo('#div_register_flight');
-                        $('#div_register_flight').show();
+                        }else{
 
-
-                        var $select_buy_insure_airlines = $('<select/>', {
-                            'class':"form-select",
-                            'id':'buy_insure_airlines'
-                        });
-                        $select_buy_insure_airlines.append('<option value="' + address_airline + '">' + address_airline + '</option>');
-                        $select_buy_insure_airlines.appendTo('#div_buy_insure_airlines');
-                        $('#div_buy_insure_airlines').show();
+                            var $select = $('<select/>', {
+                                'class':"form-select",
+                                'id':'flight_airlines'
+                            });
+                            $select.append('<option value="' + address_airline + '">' + address_airline + '</option>');
+                            $select.appendTo('#div_register_flight');
+                            $('#div_register_flight').show();
 
 
+                            var $select_buy_insure_airlines = $('<select/>', {
+                                'class':"form-select",
+                                'id':'buy_insure_airlines'
+                            });
+                            $select_buy_insure_airlines.append('<option value="' + address_airline + '">' + address_airline + '</option>');
+                            $select_buy_insure_airlines.appendTo('#div_buy_insure_airlines');
+                            $('#div_buy_insure_airlines').show();
                     }
-                });
+                 }
+            });
 
-            }else{
+        }else{
                 alert("Please, fill all empty spaces in Pay Fee Section!");
             }
         });
@@ -126,44 +127,38 @@ import './flightsurety.css';
                     contract.registerFlight(flight_code, flight_origin, flight_destination, flight_timestamp, address_airline, (error, result) => {
                         display('Registration Flight', 'Flight '+flight_code, [ { label: 'Registration:', error: error,  value: 'Success - Flight registered' } ]);
                     });
-    
-    
-                    contract.getFlightKey(address_airline, flight_code, flight_timestamp, (error, result) => {
                         
-                        let select_ok = DOM.elid('options_to_buy_insure');
+                    let select_ok = DOM.elid('options_to_buy_insure');
+
+                    if(select_ok != null){
+                        $('#options_to_buy_insure').append('<option value="' + flight_code + '">' + flight_code + '</option>');
+                        $('#options_to_submit_oracle').append('<option value="'+flight_code+','+flight_timestamp+','+address_airline+'">' + flight_code + '</option>');
+                        
+                        $('#div_buy_insure').show();
+                        $('#div_submit_oracles').show();
+                    }else{
     
-                        if(select_ok != null){
-                            $('#options_to_buy_insure').append('<option value="' + flight_code + '">' + flight_code + '</option>');
-                            $('#options_to_submit_oracle').append('<option value="' + result + '">' + flight_code + '</option>');
-                            
-                            $('#div_buy_insure').show();
-                            $('#div_submit_oracles').show();
-                        }else{
-      
-                            var $select_insuree = $('<select/>', {
-                                'class':"form-select",
-                                'id':'options_to_buy_insure'
-                            });
-                            var $select_oracle = $('<select/>', {
-                                'class':"form-select",
-                                'id':'options_to_submit_oracle'
-                            });
-                            $select_insuree.append('<option value="' + flight_code + '">' + flight_code + '</option>');
-                            $select_insuree.appendTo('#div_buy_insure');
-                            $('#div_buy_insure').show();
-    
-                            $select_oracle.append('<option value="' + result + '">' + flight_code + '</option>');
-                            $select_oracle.appendTo('#div_submit_oracles');
-                            $('#div_submit_oracles').show();
-                        }
+                        var $select_insuree = $('<select/>', {
+                            'class':"form-select",
+                            'id':'options_to_buy_insure'
                         });
-        
+                        var $select_oracle = $('<select/>', {
+                            'class':"form-select",
+                            'id':'options_to_submit_oracle'
+                        });
+                        $select_insuree.append('<option value="' + flight_code + '">' + flight_code + '</option>');
+                        $select_insuree.appendTo('#div_buy_insure');
+                        $('#div_buy_insure').show();
+
+                        $select_oracle.append('<option value="'+flight_code+','+flight_timestamp+','+address_airline+'">' + flight_code + '</option>');
+                        $select_oracle.appendTo('#div_submit_oracles');
+                        $('#div_submit_oracles').show();
+                    }
+
                 }else{
                     alert("Please, fill all empty spaces in Registration Flight Section!");
                 }
-
             }
-
         });
 
          //Buy Insuree.
@@ -187,44 +182,100 @@ import './flightsurety.css';
                     contract.buy(address_airline, flight_code, timestamp, value, address_client, (error, result) => {
                         display('Buy Insuree Done', 'User '+address_client+' buy a insure for a flight: '+flight_code, [ { label: 'Registration:', error: error,  value: 'Success - Insuree purchased' } ]);
                     
-                        let select_ok = DOM.elid('options_to_claim_withdraw');
-                        let flight_hash = $("#options_to_submit_oracle").filter(function() {
-                            return $(this).text() == flight_code;
-                          }).val();
+                        if(result){
+                            let select_ok = DOM.elid('options_to_claim_withdraw');
+    
+                            if(select_ok != null){
+                                $('#options_to_claim_withdraw').append('<option value="'+flight_code+','+timestamp+','+address_airline+'">' + flight_code + '</option>');
+                                $('#div_claim_w_flight_code').show();
 
-                        if(select_ok != null){
-                            $('#options_to_claim_withdraw').append('<option value="' + flight_hash + '">' + flight_code + '</option>');
-                            $('#div_claim_w_flight_code').show();
-                        }else{
-      
-                            var $select_claim_w = $('<select/>', {
-                                'class':"form-select",
-                                'id':'options_to_claim_w'
-                            });
-                            $select_claim_w.append('<option value="' + flight_hash + '">' + flight_code + '</option>');
-                            $select_claim_w.appendTo('#div_claim_w_flight_code');
-                            $('#div_claim_w_flight_code').show();
+                                /*$('#options_to_ckeck_balance').append('<option value="'+address_client+'">' + address_client + '</option>');
+                                $('#div_user_balance').show();*/
+                            }else{
+          
+                                var $select_claim_w = $('<select/>', {
+                                    'class':"form-select",
+                                    'id':'options_to_claim_w'
+                                });
+                                $select_claim_w.append('<option value="'+flight_code+','+timestamp+','+address_airline+'">' + flight_code + '</option>');
+                                $select_claim_w.appendTo('#div_claim_w_flight_code');
+                                $('#div_claim_w_flight_code').show();
+
+                                /*var $select_check_balance = $('<select/>', {
+                                    'class':"form-select",
+                                    'id':'options_to_ckeck_balance'
+                                });
+                                $select_check_balance.append('<option value="'+address_client+'">' + address_client + '</option>');
+                                $select_check_balance.appendTo('#div_user_balance');
+                                $('#div_user_balance').show();*/
+                            }
                         }
-
                     });
                 }else{
                     alert("Please, fill all empty spaces in Buy Insuree Section!");
                 }
             }
-
          });
 
+        DOM.elid('check_balance').addEventListener('click', () => {
+            let client_address =  DOM.elid('balance_client_address').value;
+            console.log("client_address:", client_address);
+            if(client_address != ''){
+                contract.getBalance(client_address, (error, result) => {
+                    $("#user_balance_label").text(result);
+                });
+                
+            }else{
+                alert("Please, fill space empty to check the balance of client!");
+            }
+           
+        });
+
+        
+        DOM.elid('submit_claim_withdraw').addEventListener('click', () => {
+            let address_client = DOM.elid('claim_w_client_address').value;
+            let flight_code_timestamp = DOM.elid('options_to_claim_w');
+            let flight_code = "";
+            let timestamp = "";
+            let airline_adress = "";
+
+            if(flight_code_timestamp == null){
+                alert("Theres is no flight insured!"); 
+
+            }else{
+
+                if(address_client != ''){
+                    flight_code_timestamp = DOM.elid('options_to_claim_w').value;
+                    flight_code_timestamp = flight_code_timestamp.split(",");
+                    flight_code = flight_code_timestamp[0];
+                    timestamp = flight_code_timestamp[1];
+                    airline_adress = flight_code_timestamp[2];
+
+                    contract.withdraw(airline_adress, flight_code, timestamp, address_client, (error, result) => {
+                        display('Claim Withdraw', 'User '+address_client, [ { label: 'Registration:', error: error,  value: 'Success - Withdraw paid' } ]);
+                    });
+                }else{
+                    alert("Please, fill the client address in Claim Withdraw section!"); 
+                }
+                
+            }
+         });
 
         // User-submitted transaction
         DOM.elid('submit-oracle').addEventListener('click', () => {
-            let flight = DOM.elid('options_to_submit_oracle');
-
-            if(flight == null){
+            let flight_code_timestamp = DOM.elid('options_to_submit_oracle');
+           
+            if(flight_code_timestamp == null){
                 alert("There isn't register flight!");
             }else{
                 // Write transaction
-                flight = DOM.elid('options_to_submit_oracle').value;
-                contract.fetchFlightStatus(flight, (error, result) => {
+                flight_code_timestamp = DOM.elid('options_to_submit_oracle').value;
+                flight_code_timestamp = flight_code_timestamp.split(",");
+                let flight_code = flight_code_timestamp[0];
+                let timestamp = flight_code_timestamp[1];
+                let airline_address = flight_code_timestamp[2];
+                console.log(flight_code, timestamp, airline_address);
+                contract.fetchFlightStatus(airline_address, flight_code, timestamp, (error, result) => {
                     display('Oracles', 'Trigger oracles', [ { label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp} ]);
                 });
             }

@@ -79,7 +79,22 @@
                 <button id="submit_buy_insure"  class="btn btn-primary">Buy</button>                        
                         
             </section>
-    
+
+            <section id="user_balance" class="user_balance">
+              <h2>Passenger Balance</h2>
+              <div id="div_user_balance"></div>
+              <input type="text" id="balance_client_address" placeholder="Client Address"> 
+              <h3>Balance: <span id="user_balance_label" class="badge badge-secondary"></span></h3>
+              <button id="check_balance" class="btn btn-primary">Check</button>
+            </section>
+            
+            <section id="claim_withdraw" class="claim_withdraw">
+              <h2>Claim Withdraw</h2>
+              <div id="div_claim_w_flight_code"></div>
+              <input type="text" id="claim_w_client_address" placeholder="Client Address">
+              <button id="submit_claim_withdraw" class="btn btn-primary">Get Withdraw</button>
+            </section>
+
             <section id="oracles" class="oracles">
                 <h2>Submit Oracles</h2>
                 <div id="div_submit_oracles"></div>

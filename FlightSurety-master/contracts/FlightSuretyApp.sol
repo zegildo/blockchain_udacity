@@ -146,6 +146,12 @@ contract FlightSuretyApp {
         return flightSuretyData.withdraw(flight_hash, msg.sender);
     }
 
+    function withdraw_client(address airline, string fligh_code, uint timestamp) external
+    {
+        bytes32 flight_hash = getFlightKey(airline, fligh_code, timestamp);
+        return flightSuretyData.withdraw(flight_hash, msg.sender);
+    }
+
     function getNumAirlinesFunded() public view returns(uint){
         return flightSuretyData.getNumAirlinesFunded();
     }

@@ -48,12 +48,12 @@ export default class Contract {
             .call({from: self.owner}, callback);
     }
 
-    fetchFlightStatus(flight, callback) {
+    fetchFlightStatus(airline, flight, timestamp, callback) {
         let self = this;
         let payload = {
-            airline: self.airlines[0],
+            airline: airline,
             flight: flight,
-            timestamp: Math.floor(Date.now() / 1000)
+            timestamp: timestamp
         } 
         self.flightSuretyApp.methods
             .fetchFlightStatus(payload.airline, payload.flight, payload.timestamp)
@@ -98,6 +98,16 @@ export default class Contract {
             airline_address, 
             fligh_code, 
             timestamp).send({from:sender, value:amount,  gas: 5000000}, callback);
+    }
+
+    getBalance(address_client, callback){
+        let self = this;
+        self.web3.eth.getBalance(address_client, callback);
+    }
+
+    withdraw(airline, fligh_code, timestamp, sender, callback){
+        let self = this;
+        self.flightSuretyApp.methods.withdraw_client(airline, fligh_code, timestamp).send({from:sender, gas: 5000000}, callback);
     }
 
     getFlightKey(airline, flight, timestamp, callback){

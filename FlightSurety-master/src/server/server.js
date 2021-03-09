@@ -80,7 +80,8 @@ web3.eth.getAccounts().then(accounts => {
                 "gasPrice": 100000000000
               }).then(result => {
   
-                if(result[0]==index || result[1]==index || result[2]==index){        
+                if(result[0]==index || result[1]==index || result[2]==index){     
+                  console.log("Status:",status);   
                   flightSuretyApp.methods
                   .submitOracleResponse(index, airline, flight, timestamp, status).send({
                     "from": oracle,
