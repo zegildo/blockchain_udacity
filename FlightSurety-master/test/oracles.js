@@ -1,9 +1,14 @@
 var FlightSuretyApp = artifacts.require("FlightSuretyApp");
 var FlightSuretyData = artifacts.require("FlightSuretyData");
-//var Test = require('../config/testConfig.js');
-//var BigNumber = require('bignumber.js');
 
 contract('Oracles', async (accounts) => {
+  // Watch contract events
+  const STATUS_CODE_UNKNOWN = 0;
+  const STATUS_CODE_ON_TIME = 10;
+  const STATUS_CODE_LATE_AIRLINE = 20;
+  const STATUS_CODE_LATE_WEATHER = 30;
+  const STATUS_CODE_LATE_TECHNICAL = 40;
+  const STATUS_CODE_LATE_OTHER = 50;
 
   const TEST_ORACLES_COUNT = 20;
   //var config;
@@ -11,16 +16,6 @@ contract('Oracles', async (accounts) => {
     //config = await Test.Config(accounts);
     console.log(accounts);
     console.log("length: " + accounts.length);
-
-    
-    // Watch contract events
-    const STATUS_CODE_UNKNOWN = 0;
-    const STATUS_CODE_ON_TIME = 10;
-    const STATUS_CODE_LATE_AIRLINE = 20;
-    const STATUS_CODE_LATE_WEATHER = 30;
-    const STATUS_CODE_LATE_TECHNICAL = 40;
-    const STATUS_CODE_LATE_OTHER = 50;
-
   });
 
 
@@ -46,13 +41,18 @@ contract('Oracles', async (accounts) => {
   });
 
   it('can request flight status', async () => {
-    
+
       let instanceApp = await FlightSuretyApp.deployed();
       let flight = 'AA 1122'; // flight code
+      let origin = "JPA";
+      let destination = "REC";
       let dateString = "2020-11-11T11:11:00Z"
       let timestamp = new Date(dateString).getTime();
       let owner = accounts[0];
+      let ten_ether_fund = await web3.utils.toWei("10", "ether");
       
+      await instanceApp.fundFee({from:owner, value:ten_ether_fund});
+      await instanceApp.registerFlight(flight, origin, destination, timestamp, {from:owner});
       await instanceApp.fetchFlightStatus(owner, flight, timestamp);
 
       var numResponses = 0;
@@ -66,7 +66,6 @@ contract('Oracles', async (accounts) => {
           numResponses+=1;
     
           } catch(e) {
-    
             console.log(`\nOracle no. ${a} not chosen`, 0, oracleIndexes[0].toNumber(), flight, timestamp);
           }
     }
@@ -76,11 +75,10 @@ contract('Oracles', async (accounts) => {
         let flight_hash = await instanceApp.getFlightKey(owner, flight, timestamp);
         let flightInfo = await instanceApp.getFlight(flight_hash);
         console.log("Flight code: ", flightInfo[0]);
-        console.log("Status code: ", Number(flightInfo[3]));
+        console.log("Status code: ", Number(flightInfo[6]));
         assert.equal(flightInfo[0], "AA 1122");
-        assert.equal(flightInfo[3], STATUS_CODE_ON_TIME);
+        assert.equal(flightInfo[6], STATUS_CODE_ON_TIME);
     }
-
 
   });
 

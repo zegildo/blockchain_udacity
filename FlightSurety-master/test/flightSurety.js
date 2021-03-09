@@ -1,20 +1,8 @@
 var FlightSuretyApp = artifacts.require("FlightSuretyApp");
 var FlightSuretyData = artifacts.require("FlightSuretyData");
-//let flightSuretyData = FlightSuretyData.new();
-//let flightSuretyApp = FlightSuretyApp.new(flightSuretyData.address);
 var BigNumber = require('bignumber.js');
 
 contract('Flight Surety Tests', async (accounts) => {
-    
-  //var config;
-  before('setup contract', async () => {
-    //config = await Test.Config(accounts);
-    //await config.flightSuretyData.authorizeCaller(config.flightSuretyApp.address);
-  });
-
-  /****************************************************************************************/
-  /* Operations and Settings                                                              */
-  /****************************************************************************************/
 
   it('(operational) has correct initial isOperational() value', async function () {
     // Get operating status
@@ -106,20 +94,6 @@ contract('Flight Surety Tests', async (accounts) => {
     assert.equal(airline_2_details[2], true);//isRegistered
     assert.equal(airline_2_details[3], false);//isFunded
   });
-/*
-  it("(airline register) check Airline is already registered", async() => {
-    let airline_1 = accounts[0];
-    let airline_2 = accounts[1];
-    let instanceApp = await FlightSuretyApp.deployed();
-
-    let reverted = false;
-    try{
-        await instanceApp.registerAirline(airline_2, "Azul Airlines", {from:airline_1})
-    }catch(err){
-        reverted = true;
-    }
-     assert.equal(reverted, true, "Airline is already registered");
-});*/
 
   it("(airline register) register 4 airlines directly", async() => {
 
@@ -208,66 +182,21 @@ it("(fund) Airline can fund", async() => {
     let instanceApp = await FlightSuretyApp.deployed();
     let airline_1 = accounts[0];
     let ten_ether_fund = await web3.utils.toWei("10", "ether");
-
-    //let balance_App = await web3.eth.getBalance(config.flightSuretyApp.address);
-    //let balance_Data = await web3.eth.getBalance(config.flightSuretyData.address);
-    //console.log("balance_App_before:", balance_App);
-    //console.log("balance_Data_before:", balance_Data);
     
     let airline_Balance_Before =  await web3.eth.getBalance(airline_1);
-    //console.log("airline_2_Balance_Before:", airline_Balance_Before);
 
-    
-    //let address = instanceApp.address;
     await instanceApp.fundFee({from:airline_1, value:ten_ether_fund});
-    //console.log("Address:",address);
 
-    //balance_App = await web3.eth.getBalance(address);
-    //balance_Data = await web3.eth.getBalance(config.flightSuretyData.address);
-    //console.log("balance_App_after:", balance_App);
-    //console.log("balance_Data_after:", balance_Data);
-    
     let airline_Balance_After = await web3.utils.toWei(await web3.eth.getBalance(airline_1), "ether");
     airline_Balance_After = new BigNumber(airline_Balance_After)
-    //console.log("airline_1_Balance_After:", airline_Balance_After);
+    
     let restore_balance = new BigNumber(airline_Balance_After) + new BigNumber(ten_ether_fund);
-    //console.log("restore:", restore_balance);
     assert.equal(restore_balance < airline_Balance_Before, true);
 
     let funded_airlines = await instanceApp.getNumAirlinesFunded.call();
     assert.equal(funded_airlines,1);
 
 });
-/*
-it("(fund) No registered Airline can fund", async() => {
-    
-    let instanceApp = await FlightSuretyApp.deployed();
-    let airline_5 = accounts[4];
-    let ten_ether_fund = await web3.utils.toWei("10", "ether");
-
-    let reverted = false;
-    try{
-        await instanceApp.fundFee({from:airline_5, value:ten_ether_fund});
-    }catch(err){
-        reverted = true;
-    }
-    assert.equal(reverted, true, "Unregistered Airline trying to change status");
-});
-/*
-it("(fund) Fund can't accept value above 10 ether ", async() => {
-    let instanceApp = await FlightSuretyApp.deployed();
-    let airline_2 = accounts[1];
-    let nine_ether_fund = await web3.utils.toWei("9", "ether");
-
-    let reverted = false;
-    try{
-        await instanceApp.fundFee({from:airline_2, value:nine_ether_fund});
-    }catch(err){
-        reverted = true;
-    }
-    assert.equal(reverted, true, "The initial airline fee is equal to 10 ether");
-});*/
-
 
 it("(fund) check isFunded is true", async() => {
     let instanceApp = await FlightSuretyApp.deployed();
@@ -275,7 +204,6 @@ it("(fund) check isFunded is true", async() => {
     let airline_1_details = await instanceApp.getAirline.call(airline_1);
     assert.equal(airline_1_details[3], true);
 });
-
 
 it("(voting) register by multiparty consensus voting", async() => {
     
@@ -323,47 +251,6 @@ it("(voting) register by multiparty consensus voting", async() => {
     //isFunded is false
     assert.equal(airline_5_details[3], false);
 });
-/*
-it("(voting) no funded airline can vote", async() => {
-
-    let instanceApp = await config.flightSuretyApp;
-    let airline_2 = accounts[1];
-    let airline_5 = accounts[4];
-    let airline_2_details = await instanceApp.getAirline(airline_2);
-    assert.equal(airline_2_details[3], false);
-
-    try{
-        await instanceApp.vote(airline_5, {from:airline_2});
-    }catch(err){
-        assert.equal(err.reason,"Airline can not participate in contract until it submits funding of 10 ether");
-    }
-});
-
-
-it("(voting) Funded Airline can vote", async() => {
-    let instanceApp = await config.flightSuretyApp;
-    let airline_1 = accounts[0];
-    let airline_5 = accounts[4];
-
-    await instanceApp.vote(airline_5, {from:airline_1});
-
-    airline_5_details = await instanceApp.getAirline.call(airline_5);
-
-    assert.equal(airline_5_details[2], false);
-    assert.equal(airline_5_details[4].length, 1);
-});
-
-it("(voting) An airline can't vote again", async() => {
-    let instanceApp = await config.flightSuretyApp;
-    let airline_1 = accounts[0];
-    let airline_5 = accounts[4];
-
-    try{
-        await instanceApp.vote(airline_5, {from:airline_1});
-    }catch(err){
-        assert.equal(err.reason,"The Airline already voted!");
-    }
-});*/
 
 it("(Flight) create a flight", async() => {
     
@@ -514,7 +401,7 @@ it("(Pay Insuree) ", async() => {
     user_balance_after = new BigNumber(user_balance_after);
 
     assert.equal(insure_due_after, 0);
-    assert.equal(user_balance_before < user_balance_after, true);
+    assert.equal(user_balance_after.isGreaterThan(user_balance_before), true);
 
 });
  
