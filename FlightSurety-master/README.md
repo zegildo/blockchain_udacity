@@ -42,6 +42,9 @@ Please guarantee that the mnemonic and http link in your `truffle-config.js` are
 
 ![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/truffle-mnemonic.JPG?raw=true)
 
+## Migrate your code
+
+`truffle migrate --reset`
 
 ## Truffle test
 
@@ -61,10 +64,17 @@ Check the correct execution:
 ![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/test-ok-3.JPG?raw=true)
 
 
+# SERVER
+
+1) Please, guarantee that Ganache GUI is opened and alive; 
+2) In a terminal execute the server `npm run server`:
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/server-ok.JPG?raw=true)
+
+
 # DAPP
 
-Execute the server `npm run server`:
-
+In another execute the  `npm run dapp`:
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/dapp-ok.JPG?raw=true)
 
 # FlightSurety
 
