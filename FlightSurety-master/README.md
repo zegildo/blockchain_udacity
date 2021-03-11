@@ -10,28 +10,37 @@ Versions:
 
 # Truffle test
 
+Short explanation about how to test the code.
+
 ## Ganache
 
 Configure ganache GUI:
 
 1) Create an workspace:
-
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/create-workspace.JPG?raw=true)
 
 2) Configure it creating more than 20 accounts. It is necessary to pass on the rubric request.
 ![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/morethan20.JPG?raw=true)
 
-
-3) Copy mnemonic to paste in the truffle-config.js:
-
-
-4) Keep Ganache opened and alive during the execution!
+3) Configure your truffle-config.js inside Ganache:
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/configure--ganache-workspace.JPG?raw=true)  
 
 
+4) Copy mnemonic to paste in the truffle-config.js:
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/mnemoic.JPG?raw=true)
 
 
-## Truffle-config.js
+5) Keep Ganache opened and alive during the execution! Don't close it!
 
-Change the mnemonic sequence to your ganache sequence.
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/ganache-ok.JPG?raw=true)
+
+
+
+## truffle-config.js
+
+Please guarantee that the mnemonic and http link in your `truffle-config.js` are exactly the same with your Ganache GUI:
+
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/truffle-mnemonic.JPG?raw=true)
 
 
 ## Truffle test
@@ -42,12 +51,19 @@ Execute:
 
 Please, don't execute just `truffle test` the default **test** is not able to fulfill all the requirements of this project.
 
-It is everything ok like that:
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/rubric-oracle.JPG?raw=true)
 
+
+Check the correct execution:
+
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/test-ok-1.JPG?raw=true)
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/test-ok-2.JPG?raw=true)
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/test-ok-3.JPG?raw=true)
 
 
 # DAPP
 
+Execute the server `npm run server`:
 
 
 # FlightSurety
