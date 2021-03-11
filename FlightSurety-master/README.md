@@ -83,8 +83,10 @@ In another execute the  `npm run dapp`:
 
 
 # Execution
+
+See the video on the youtube.
 [![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/slash.JPG?raw=true)
-](https://youtu.be/oYFiuNflo0A)
+](https://youtu.be/T66DtMHeVho)
 
 
 
