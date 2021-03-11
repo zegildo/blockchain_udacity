@@ -20,13 +20,16 @@ Configure ganache GUI:
 ![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/create-workspace.JPG?raw=true)
 
 2) Configure it creating more than 20 accounts. It is necessary to pass on the rubric request.
+
 ![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/morethan20.JPG?raw=true)
 
 3) Configure your truffle-config.js inside Ganache:
+
 ![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/configure--ganache-workspace.JPG?raw=true)  
 
 
 4) Copy mnemonic to paste in the truffle-config.js:
+
 ![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/mnemoic.JPG?raw=true)
 
 
@@ -68,13 +71,24 @@ Check the correct execution:
 
 1) Please, guarantee that Ganache GUI is opened and alive; 
 2) In a terminal execute the server `npm run server`:
+
 ![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/server-ok.JPG?raw=true)
 
 
 # DAPP
 
 In another execute the  `npm run dapp`:
+
 ![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/dapp-ok.JPG?raw=true)
+
+
+# Execution
+[![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/slash.JPG?raw=true)
+](https://youtu.be/oYFiuNflo0A)
+
+
+
+
 
 # FlightSurety
 
