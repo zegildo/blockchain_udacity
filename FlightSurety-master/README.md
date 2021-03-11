@@ -18,6 +18,7 @@ Configure ganache GUI:
 
 
 2) Configure it creating more than 20 accounts. It is necessary to pass on the rubric request.
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/FlightSurety-master/images/morethan20.JPG?raw=true)
 
 
 3) Copy mnemonic to paste in the truffle-config.js:
