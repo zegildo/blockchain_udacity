@@ -1,3 +1,54 @@
+# How to test this code
+
+Here I present some information on how to set up the execution environment to test this project.
+
+Versions:
+* Truffle v5.1.66 (core: 5.1.66)
+* Solidity - ^0.4.24 (solc-js)
+* Node v12.16.3
+* Web3.js v1.2.9
+
+# Truffle test
+
+## Ganache
+
+Configure ganache GUI:
+
+1) Create an workspace:
+
+
+2) Configure it creating more than 20 accounts. It is necessary to pass on the rubric request.
+
+
+3) Copy mnemonic to paste in the truffle-config.js:
+
+
+4) Keep Ganache opened and alive during the execution!
+
+
+
+
+## Truffle-config.js
+
+Change the mnemonic sequence to your ganache sequence.
+
+
+## Truffle test
+
+Execute:
+
+`truffle test --network develop`
+
+Please, don't execute just `truffle test` the default **test** is not able to fulfill all the requirements of this project.
+
+It is everything ok like that:
+
+
+
+# DAPP
+
+
+
 # FlightSurety
 
 FlightSurety is a sample application project for Udacity's Blockchain course.
