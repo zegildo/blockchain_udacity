@@ -339,7 +339,9 @@ it("(Buy an insure) ", async() => {
 
     let user_client = accounts[6];
     let one_ether_insure = await web3.utils.toWei("1", "ether");
-
+    one_ether_insure = new BigNumber(one_ether_insure);
+    console.log("one_ether_insure:", one_ether_insure);
+    
     //verificar se o status do voo foi atualizado
     await instanceApp.buy(airline_1, flight_code, timestamp, {from:user_client, value:one_ether_insure});
     let flight_hash = await instanceApp.getFlightKey.call(airline_1, flight_code, timestamp);
@@ -348,7 +350,11 @@ it("(Buy an insure) ", async() => {
 
     //verificar se o valor enviado bate com o valor armazenado pela estrutura
     let insure_value = await instanceApp.getInsuredClient.call(flight_hash, {from:user_client});
-    assert.equal(one_ether_insure, insure_value);
+    insure_value = new BigNumber(insure_value);
+    console.log("insure_value:", insure_value);
+    console.log("one_ether_insure.eq(insure_value):", one_ether_insure.eq(insure_value));
+
+    assert.equal(one_ether_insure.eq(insure_value), true);
 
 });
 
@@ -367,9 +373,14 @@ it("(Credit Insuree) ", async() => {
     let statusCode = 20;
     
     await instanceApp.processFlightStatus(airline_1, flight_code, timestamp, statusCode, {from:user_client});
-    let insure_value = await instanceApp.getInsuredClient(flight_hash, {from:user_client});
-    let insure_due = await instanceApp.getInsuredDue(flight_hash, {from:user_client});
-    assert.equal(insure_due, insure_value * 1.5);
+    let insure_value = await instanceApp.getInsuredClient.call(flight_hash, {from:user_client});
+    insure_value = new BigNumber(insure_value)
+    //console.log("insure_value:", insure_value);
+    let insure_due = await instanceApp.getInsuredDue.call(flight_hash, {from:user_client});
+    insure_due = new BigNumber(insure_due);
+    //console.log("insure_due:",insure_due);
+    //console.log("insure_value.multipliedBy(1.5):",insure_value.multipliedBy(1.5));
+    assert.equal(insure_due.eq(insure_value.multipliedBy(1.5)), true);
 });
 
 
@@ -391,7 +402,7 @@ it("(Pay Insuree) ", async() => {
     let insure_due_before = await instanceApp.getInsuredDue(flight_hash, {from:user_client});
     insure_due_before = new BigNumber(insure_due_before);
 
-    assert.equal(insure_due_before > 0, true);
+    assert.equal(insure_due_before.isGreaterThan(0), true);
 
     await instanceApp.withdraw(flight_hash, {from:user_client});
 

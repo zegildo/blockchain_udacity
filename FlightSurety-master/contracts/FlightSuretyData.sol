@@ -360,6 +360,7 @@ contract FlightSuretyData {
         bytes32 flight_hash = getFlightKey(airline_address, fligh_code, timestamp);
         require(insured_clients[flight_hash][client] == 0, "User already bought insurance for this flight");
         
+        insured_due[flight_hash][client] = 0;
         flights[flight_hash].isInsured = true;
         flights[flight_hash].insured_clients.push(client);
         insured_clients[flight_hash][client] = msg.value;
@@ -368,14 +369,21 @@ contract FlightSuretyData {
     /**
      *  @dev Credits payouts to insurees
     */
-    function creditInsurees(bytes32 flight_hash, address client) 
+    function creditInsurees(bytes32 flight_hash) 
     external
     requireIsOperational
     requireFlightRegister(flight_hash)
     requireFlightIsInsured(flight_hash)
     {
-        uint insure_payed_by_passanger = insured_clients[flight_hash][client];
-        insured_due[flight_hash][client] = (insure_payed_by_passanger.mul(15)).div(10); 
+        Flight memory flight = flights[flight_hash];
+        address[] memory insured_clients_of_flight = flight.insured_clients;
+
+        for(uint i=0; i < insured_clients_of_flight.length; i++){
+            address client = insured_clients_of_flight[i];
+            uint insure_payed_by_passanger = insured_clients[flight_hash][client];
+            insured_due[flight_hash][client] = (insure_payed_by_passanger.mul(15)).div(10);
+        }
+
     }
     
     /**
@@ -432,7 +440,8 @@ contract FlightSuretyData {
     *
     */
     function getInsuredDue(bytes32 flight_hash, address client) public view returns(uint){
-        return insured_due[flight_hash][client];
+        uint value =  insured_due[flight_hash][client];
+        return value;
     }
 }
 

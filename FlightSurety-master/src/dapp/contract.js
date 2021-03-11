@@ -2,6 +2,7 @@ import FlightSuretyApp from '../../build/contracts/FlightSuretyApp.json';
 import Config from './config.json';
 import Web3 from 'web3';
 
+
 export default class Contract {
     constructor(network, callback) {
 
@@ -108,6 +109,12 @@ export default class Contract {
     withdraw(airline, fligh_code, timestamp, sender, callback){
         let self = this;
         self.flightSuretyApp.methods.withdraw_client(airline, fligh_code, timestamp).send({from:sender, gas: 5000000}, callback);
+    }
+
+    getInsuredDue(airline, fligh_code, timestamp, sender, callback){
+        console.log(airline, fligh_code, timestamp, sender);
+        let self = this;
+        self.flightSuretyApp.methods.getInsureeDue_client(airline, fligh_code, timestamp).call({from:sender, gas: 5000000}, callback);
     }
 
     getFlightKey(airline, flight, timestamp, callback){

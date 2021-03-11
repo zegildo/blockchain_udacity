@@ -2,6 +2,7 @@
 import DOM from './dom';
 import Contract from './contract';
 import './flightsurety.css';
+import BigNumber from '../../node_modules/bignumber.js';
 
 (async() => {
 
@@ -229,6 +230,38 @@ import './flightsurety.css';
                 alert("Please, fill space empty to check the balance of client!");
             }
            
+        });
+
+        DOM.elid('submit_know_value').addEventListener('click', () => {
+            let address_client = DOM.elid('claim_w_client_address').value;
+            let flight_code_timestamp = DOM.elid('options_to_claim_w');
+            let flight_code = "";
+            let timestamp = "";
+            let airline_adress = "";
+
+            if(flight_code_timestamp == null){
+                alert("Theres is no flight insured!"); 
+
+            }else{
+
+                if(address_client != ''){
+                    flight_code_timestamp = DOM.elid('options_to_claim_w').value;
+                    flight_code_timestamp = flight_code_timestamp.split(",");
+                    flight_code = flight_code_timestamp[0];
+                    timestamp = flight_code_timestamp[1];
+                    airline_adress = flight_code_timestamp[2];
+
+                    contract.getInsuredDue(airline_adress, flight_code, timestamp, address_client, (error, result) => {
+                        let value = new BigNumber(result);
+                        console.log(result+','+value);
+                        $("#user_withdraw_label").text(value);
+                    });
+                }else{
+                    alert("Please, fill the client address in Claim Withdraw section!"); 
+                }
+                
+            }
+
         });
 
         

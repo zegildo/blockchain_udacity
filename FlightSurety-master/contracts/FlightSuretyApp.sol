@@ -137,6 +137,11 @@ contract FlightSuretyApp {
         return flightSuretyData.getInsuredClient(flight_hash, msg.sender);
     }
 
+    function getInsureeDue_client(address airline, string fligh_code, uint timestamp)public view returns(uint){
+        bytes32 flight_hash = getFlightKey(airline, fligh_code, timestamp);
+        return flightSuretyData.getInsuredDue(flight_hash, msg.sender);
+    }
+
     function getInsuredDue(bytes32 flight_hash) public view returns(uint){
         return flightSuretyData.getInsuredDue(flight_hash, msg.sender);
     }
@@ -201,7 +206,7 @@ contract FlightSuretyApp {
         flightSuretyData.updateFlightStatus(flight_hash, statusCode);
         
         if (statusCode == STATUS_CODE_LATE_AIRLINE) {
-            flightSuretyData.creditInsurees(flight_hash, msg.sender);
+            flightSuretyData.creditInsurees(flight_hash);
         }
     }
 
@@ -415,7 +420,7 @@ contract FlightSuretyData {
     function registerFlight(string flight_code, string origin, string destination, uint timestamp, address airline) external;
     function updateFlightStatus(bytes32 flight_hash, uint8 status_code) external;
     function withdraw(bytes32 flight_hash, address client_address) external;
-    function creditInsurees(bytes32 flight_hash, address client) external;
+    function creditInsurees(bytes32 flight_hash) external;
     function vote(address airline_address, address airline_voting) external;
     function fundFee(address addr) external payable;
     function buy(address airline_address, string fligh_code, uint timestamp, address client) external payable; 
