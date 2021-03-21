@@ -1,4 +1,6 @@
-pragma solidity ^0.5.0;
+// SPDX-License-Identifier: MIT
+
+pragma solidity >=0.5.0;
 
 import '@openzeppelin/contracts/utils/Address.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
@@ -163,15 +165,15 @@ contract ERC721 is Pausable, ERC165 {
 
 //    @dev Approves another address to transfer the given token ID
     function approve(address to, uint256 tokenId) public {
-        
+        address owner = ownerOf(tokenId);
         // TODO require the given address to not be the owner of the tokenId
-        require(to != ownerOf(tokenId),"Already token owner");
+        require(to != owner,"Already token owner");
         // TODO require the msg sender to be the owner of the contract or isApprovedForAll() to be true
-        require(isApprovedForAll(msg.sender, to),"It wasn't approved for all");
+        require(msg.sender == owner || isApprovedForAll(owner, msg.sender),"It wasn't approved for all");
         // TODO add 'to' address to token approvals
-        _tokenOwner[tokenId] = to;
+        _tokenApprovals[tokenId] = to;
         // TODO emit Approval Event
-        emit Approval(to, msg.sender, tokenId);
+        emit Approval(msg.sender,to,tokenId);
 
     }
 
@@ -241,11 +243,11 @@ contract ERC721 is Pausable, ERC165 {
 
     // @dev Internal function to mint a new token
     // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
-    function _mint(address to, uint256 tokenId) internal {
+    function _mint(address to, uint256 tokenId) internal virtual{
 
         // TODO revert if given tokenId already exists or given address is invalid
-        revert(_exists(tokenId), "Token already exists");
-        revert(to == address(0), "Address is invalid");
+        require(!_exists(tokenId), "Token already exists");
+        require(to != address(0), "Address is invalid");
   
         // TODO mint tokenId to given address & increase token count of owner
         _tokenOwner[tokenId] = to;
@@ -257,7 +259,7 @@ contract ERC721 is Pausable, ERC165 {
 
     // @dev Internal function to transfer ownership of a given token ID to another address.
     // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
-    function _transferFrom(address from, address to, uint256 tokenId) internal {
+    function _transferFrom(address from, address to, uint256 tokenId) internal virtual {
 
         // TODO: require from address is the owner of the given token
         require(from == ownerOf(tokenId), "From is not the owner token");
@@ -369,7 +371,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
      * @param to address to receive the ownership of the given token ID
      * @param tokenId uint256 ID of the token to be transferred
      */
-    function _transferFrom(address from, address to, uint256 tokenId) internal {
+    function _transferFrom(address from, address to, uint256 tokenId) internal override {
         super._transferFrom(from, to, tokenId);
 
         _removeTokenFromOwnerEnumeration(from, tokenId);
@@ -383,7 +385,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
      * @param to address the beneficiary that will own the minted token
      * @param tokenId uint256 ID of the token to be minted
      */
-    function _mint(address to, uint256 tokenId) internal {
+    function _mint(address to, uint256 tokenId) internal override {
         super._mint(to, tokenId);
 
         _addTokenToOwnerEnumeration(to, tokenId);
@@ -443,7 +445,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
         }
 
         // This also deletes the contents at the last position of the array
-        _ownedTokens[from].length--;
+        _ownedTokens[from].pop();
 
         // Note that _ownedTokensIndex[tokenId] hasn't been cleared: it still points to the old slot (now occupied by
         // lastTokenId, or just over the end of the array if the token was the last one).
@@ -470,12 +472,12 @@ contract ERC721Enumerable is ERC165, ERC721 {
         _allTokensIndex[lastTokenId] = tokenIndex; // Update the moved token's index
 
         // This also deletes the contents at the last position of the array
-        _allTokens.length--;
+        _allTokens.pop();
         _allTokensIndex[tokenId] = 0;
     }
 }
 
-contract ERC721Metadata is ERC721Enumerable, usingOraclize {
+contract ERC721Metadata is ERC721Enumerable, usingProvable {
     
     // TODO: Create private vars for token _name, _symbol, and _baseTokenURI (string)
     string private _name;
@@ -496,17 +498,30 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 
     constructor (string memory name, string memory symbol, string memory baseTokenURI) public {
         // TODO: set instance var values
-
+        _name = name;
+        _symbol = symbol; 
+        _baseTokenURI = baseTokenURI;
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
     }
 
     // TODO: create external getter functions for name, symbol, and baseTokenURI
 
+    function get_name() external view returns(string memory){
+        return _name;
+    }
+
+    function get_symbol() external view returns(string memory){
+        return _symbol;
+    }
+
+    function get_baseTokenURI() external view returns(string memory){
+        return _baseTokenURI;
+    }
+
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId));
         return _tokenURIs[tokenId];
     }
-
 
     // TODO: Create an internal function to set the tokenURI of a specified tokenId
     // It should be the _baseTokenURI + the tokenId in string form
@@ -514,6 +529,11 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
     // TIP #2: you can also use uint2str() to convert a uint to a string
         // see https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol for strConcat()
     // require the token exists before setting
+
+    function set_tokenURI(uint tokenId) internal{
+        require(_exists(tokenId),"tokenId doesn't exist");
+        _tokenURIs[tokenId] = strConcat(_baseTokenURI,uint2str(tokenId));
+    }
 
 }
 
@@ -525,6 +545,15 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -takes in a 'to' address, tokenId, and tokenURI as parameters
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
+
+contract CustomERC721Token is ERC721Metadata("ZeGildo","ZGD","https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/"){
+
+    function mint(address to, uint tokenId) public onlyOwner returns(bool){
+        super._mint(to,tokenId);
+        super.set_tokenURI(tokenId);
+        return true;
+    }
+}
 
 
 
