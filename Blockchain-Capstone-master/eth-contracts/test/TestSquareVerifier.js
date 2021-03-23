@@ -3,5 +3,27 @@
 // Test verification with correct proof
 // - use the contents from proof.json generated from zokrates steps
 
-    
 // Test verification with incorrect proof
+
+let verifier = artifacts.require('./Verifier');
+let correctproof = require('../../zokrates/code/square/proof');
+
+contract('Testverifier', accounts => {
+    const account_one = accounts[0];
+
+    describe('test verification with correct proof', function(){
+        beforeEach(async function () { 
+            this.contract = await verifier.new({from: account_one});
+        })
+        it('verification with correct proof',async function(){
+            let verified = await this.contract.verifyTx.call(correctproof.proof.a,correctproof.proof.b,correctproof.proof.c,correctproof.inputs,{from:account_one});
+            assert.equal(verified,true,"Zokrates verification is not valid");
+        })
+
+        it('verification with incorrect proof',async function(){
+            correctproof.inputs=[2,9];
+            let verified = await this.contract.verifyTx.call(correctproof.proof.a,correctproof.proof.b,correctproof.proof.c,correctproof.inputs,{from:account_one});
+            assert.equal(verified,false,"Zokrates verification wrongly valid");
+        })
+    })
+});
