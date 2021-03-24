@@ -35,7 +35,7 @@ contract('TestSolnSquareVerifier', accounts => {
     it('Mint a new NFT verified', async function(){
         let minted = true;
         try{
-            minted = await this.contract.mint(account_one, 2, w_proof.proof.a, 
+            await this.contract.mintNFT(account_one, 2, w_proof.proof.a, 
                                                      w_proof.proof.b,
                                                      w_proof.proof.c,
                                                      w_proof.inputs,
@@ -55,7 +55,7 @@ contract('TestSolnSquareVerifier', accounts => {
         let minted = true;
         let inputs = [7,32];
         try{
-            await this.contract.mint(account_one, 2, w_proof.proof.a, 
+            await this.contract.mintNFT(account_one, 2, w_proof.proof.a, 
                                                      w_proof.proof.b,
                                                      w_proof.proof.c,
                                                      inputs,
