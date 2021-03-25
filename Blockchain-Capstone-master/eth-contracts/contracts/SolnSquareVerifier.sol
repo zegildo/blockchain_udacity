@@ -2,7 +2,7 @@
 
 pragma solidity >=0.4.21;
 import "./verifier.sol";
-import "./ERC721Mintable.sol";
+import "./CustomERC721Token.sol";
 
 // TODO define a contract call to the zokrates generated solidity contract <Verifier> or <renamedVerifier>
 
@@ -11,7 +11,7 @@ contract SolnSquareVerifier is CustomERC721Token{
     
     Verifier public verifier;
     
-    constructor(address verifier_addr) public{
+    constructor(address verifier_addr) CustomERC721Token(verifier_addr) public{
         verifier = Verifier(verifier_addr);
     }     
 
