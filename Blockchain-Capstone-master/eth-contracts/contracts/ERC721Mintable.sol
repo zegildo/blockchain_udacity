@@ -506,15 +506,15 @@ contract ERC721Metadata is ERC721Enumerable, usingProvable {
 
     // TODO: create external getter functions for name, symbol, and baseTokenURI
 
-    function get_name() external view returns(string memory){
+    function name() external view returns(string memory){
         return _name;
     }
 
-    function get_symbol() external view returns(string memory){
+    function symbol() external view returns(string memory){
         return _symbol;
     }
 
-    function get_baseTokenURI() external view returns(string memory){
+    function baseTokenURI() external view returns(string memory){
         return _baseTokenURI;
     }
 
@@ -530,7 +530,7 @@ contract ERC721Metadata is ERC721Enumerable, usingProvable {
         // see https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol for strConcat()
     // require the token exists before setting
 
-    function set_tokenURI(uint tokenId) internal{
+    function setTokenURI(uint tokenId) internal{
         require(_exists(tokenId),"tokenId doesn't exist");
         _tokenURIs[tokenId] = strConcat(_baseTokenURI,uint2str(tokenId));
     }
@@ -550,7 +550,7 @@ contract CustomERC721Token is ERC721Metadata("ZeGildo","ZGD","https://s3-us-west
 
     function mint(address to, uint tokenId) public onlyOwner returns(bool){
         super._mint(to,tokenId);
-        super.set_tokenURI(tokenId);
+        super.setTokenURI(tokenId);
         return true;
     }
 }
