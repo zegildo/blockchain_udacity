@@ -1,8 +1,15 @@
 # Udacity Blockchain Capstone
 The steps to test the project will be described below.
 
+## Versions
+* Truffle v5.2.5 (core: 5.2.5)
+* Solidity soljson-v0.6.2+commit.bacdbe57.js
+* Node v12.16.3
+* Web3.js v1.2.9
+
 ## External Resources:
 * **Rinkeby Address:** [0xaF6a6a859fC320c1409fB34f0FBb78DbC66C3a31](https://rinkeby.etherscan.io/address/0xaf6a6a859fc320c1409fb34f0fbb78dbc66c3a31)
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/Blockchain-Capstone-master/img/Token-Traker.JPG?raw=true)
 
 * **OpenSean Link** [https://testnets.opensea.io/collection/zegildotoken](https://testnets.opensea.io/collection/zegildotoken)
 
@@ -671,12 +678,17 @@ The steps to test the project will be described below.
     }
   ]
 
-## Truffle Version:
-* Truffle v5.2.5 (core: 5.2.5)
-* Solidity soljson-v0.6.2+commit.bacdbe57.js
-* Node v12.16.3
-* Web3.js v1.2.9
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/Blockchain-Capstone-master/img/myetherwallet-on.JPG?raw=true)
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/Blockchain-Capstone-master/img/OpenSea-OK.JPG?raw=true)
 
+## Truffle Test
+`$ cd /eth-contracts`
+`$ ganache-cli`
+`$ truffle test`
+
+Please, don't execute just `truffle test` outside the folder **/eth-contracts**.
+
+![alt text](https://github.com/zegildo/blockchain_udacity/blob/main/Blockchain-Capstone-master/img/test-readme.JPG?raw=true)
 
 # Project Resources
 
